@@ -17,3 +17,5 @@ data
 **/*.swp
 **/*.log
 **/.vagrant
+**/*.ansible
+ansible/envs

@@ -13,3 +13,6 @@ run = "cd terraform && tflint"
 [tasks.tf-fmt]
 run = "cd terraform && terraform fmt"
 
+
+[tasks.ansible-lint]
+run = "cd ansible && ansible-lint"
