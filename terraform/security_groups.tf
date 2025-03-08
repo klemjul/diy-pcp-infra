@@ -30,6 +30,7 @@ resource "openstack_networking_secgroup_rule_v2" "sg_http_rule_v4" {
   security_group_id = openstack_networking_secgroup_v2.sg_proxy.id
 }
 
+
 resource "openstack_networking_secgroup_rule_v2" "sg_https_rule_v4" {
   direction         = "ingress"
   ethertype         = "IPv4"
@@ -45,7 +46,17 @@ resource "openstack_networking_secgroup_v2" "sg_openvpn" {
   description = "allow openvpn udp from everywhere"
 }
 
-resource "openstack_networking_secgroup_rule_v2" "sg_openvpn_rule_v4" {
+resource "openstack_networking_secgroup_rule_v2" "sg_openvpn_rule_tcp_v4" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 1194
+  port_range_max    = 1194
+  remote_ip_prefix  = "0.0.0.0/0"
+  security_group_id = openstack_networking_secgroup_v2.sg_openvpn.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "sg_openvpn_rule_udp_v4" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "udp"

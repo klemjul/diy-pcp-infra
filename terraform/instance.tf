@@ -22,7 +22,7 @@ resource "openstack_compute_instance_v2" "instance_openvpn" {
 
   depends_on = [
     openstack_networking_subnet_v2.network_subnet,
-    openstack_networking_secgroup_rule_v2.sg_openvpn_rule_v4,
+    openstack_networking_secgroup_v2.sg_openvpn,
     openstack_networking_secgroup_rule_v2.sg_ssh_rule_v4,
     openstack_compute_keypair_v2.ssh_public_key
   ]

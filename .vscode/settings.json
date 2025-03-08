@@ -1,0 +1,4 @@
+{
+  "ansible.python.interpreterPath": ".venv/bin/python",
+  "editor.tabSize": 2
+}

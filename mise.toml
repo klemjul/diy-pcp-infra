@@ -3,3 +3,13 @@ python = "3.11"
 
 [env]
 _.python.venv = ".venv"
+
+[tasks.tf-init]
+run = "cd terraform && terraform init -backend-config=./backend.conf"
+
+[tasks.tf-lint]
+run = "cd terraform && tflint"
+
+[tasks.tf-fmt]
+run = "cd terraform && terraform fmt"
+
