@@ -3,4 +3,3 @@
   become: true
   roles:
     - openvpn
-    - openvpn_client

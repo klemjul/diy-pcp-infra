@@ -17,11 +17,18 @@ Refer to `./defaults/main.yml` comments
 Dependencies
 ------------
 
+`ansible-playbook -i envs/sandbox -l openvpn -u debian pb_openvpn_client.yml`
 
 Example Playbook
 ----------------
 
-TODO:
+```yml
+- name: Install openvpn client(s)
+  hosts: openvpn
+  become: true
+  roles:
+    - openvpn_client
+```
 
 License
 -------

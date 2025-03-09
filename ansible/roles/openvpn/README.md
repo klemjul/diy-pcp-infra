@@ -21,7 +21,7 @@ Dependencies
 Example Playbook
 ----------------
 
-ansible-playbook -i envs/sandbox -l openvpn -u debian playbook.yml
+`ansible-playbook -i envs/sandbox -l openvpn -u debian pb_openvpn.yml`
 
 ```yml
 - name: Install openvpn
