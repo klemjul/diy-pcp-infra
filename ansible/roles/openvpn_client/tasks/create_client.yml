@@ -1,0 +1,83 @@
+---
+- name: "Generate client certificate key - {{ item }}"
+  ansible.builtin.shell: ./easyrsa --batch build-client-full {{ item }} nopass
+  args:
+    chdir: "{{ ansible_env.HOME }}/openvpn-ca/"
+    executable: /bin/bash
+    creates: "{{ ansible_env.HOME }}/openvpn-ca/pki/reqs/{{ item }}.req"
+
+- name: "Create client certificate configs dir - {{ item }}"
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/openvpn-ca/{{ item }}"
+    state: directory
+    mode: 0750
+
+- name: "Copy client sample configs - {{ item }}"
+  ansible.builtin.copy:
+    remote_src: yes
+    src: /usr/share/doc/openvpn/examples/sample-config-files/client.conf
+    dest: "{{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn"
+    mode: 0750
+
+- name: "Set the server ip and port on client config - {{ item }}"
+  ansible.builtin.lineinfile:
+    dest: "{{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn"
+    regexp: "^{{ lines.regex | regex_escape() }}"
+    line: "{{ lines.value }}"
+  loop:
+    - {
+        regex: "remote my-server-1 1194",
+        value: "remote {{ ansible_host }} 1194",
+      }
+    - { regex: ";user nobody", value: "user nobody" }
+    - { regex: ";group nogroup", value: "group nogroup" }
+    - { regex: "ca ca.crt", value: "#ca ca.crt" }
+    - { regex: "cert client.crt", value: "#cert client.crt" }
+    - { regex: "key client.key", value: "#key client.key" }
+    - { regex: "tls-auth ta.key 1", value: "#tls-auth ta.key 1" }
+    - { regex: "cipher AES-256-CBC", value: "cipher AES-128-GCM" }
+  loop_control:
+    loop_var: lines
+
+- name: "Add some secure lines on client config - {{ item }}"
+  ansible.builtin.lineinfile:
+    dest: "{{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn"
+    line: "{{ lines }}"
+  loop:
+    - "tls-ciphersuites TLS_AES_256_GCM_SHA384"
+    - "auth SHA256"
+    - "tls-client"
+    - "tls-version-min 1.2"
+    - "tls-cipher TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256"
+    - "ignore-unknown-option block-outside-dns"
+    - "setenv opt block-outside-dns"
+    - "verify-x509-name server_{{ openvpn_server_name }} name"
+    - "verb 3"
+  loop_control:
+    loop_var: lines
+
+- name: "Add client certificates and keys to client config - {{ item }}"
+  ansible.builtin.shell: "{{ item }}"
+  args:
+    chdir: "{{ ansible_env.HOME }}/openvpn-ca/"
+    executable: /bin/bash
+    creates: "{{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn"
+  loop:
+    - echo -e '<ca>' >> {{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn
+    - cat {{ ansible_env.HOME }}/openvpn-ca/pki/ca.crt >> {{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn
+    - echo -e '</ca>\n<cert>' >> {{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn
+    - cat {{ ansible_env.HOME }}/openvpn-ca/pki/issued/{{ item }}.crt >> {{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn
+    - echo -e '</cert>\n<key>' >> {{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn
+    - cat {{ ansible_env.HOME }}/openvpn-ca/pki/private/{{ item }}.key >> {{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn
+    - echo -e '</key>\n<tls-auth>' >> {{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn
+    - cat {{ ansible_env.HOME }}/openvpn-ca/pki/ta.key >> {{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn
+    - echo -e '</tls-auth>' >> {{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn
+    - echo -e 'key-direction 1' >> {{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn
+
+- name: "Fetch client ovpn config file - {{ item }}"
+  ansible.builtin.fetch:
+    src: "{{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn"
+    dest: "{{ openvpn_client_destination_key }}/"
+    flat: yes
+  tags:
+    - fetch
