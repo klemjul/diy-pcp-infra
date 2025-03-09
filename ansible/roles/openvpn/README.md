@@ -1,31 +1,35 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+This Ansible role automates the installation and configuration of OpenVPN. It sets up a Public Key Infrastructure (PKI), generates necessary certificates, configures OpenVPN server settings, and applies firewall rules to ensure a secure VPN setup.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+A Debian-based system (Debian 10/11 or Ubuntu 20.04/22.04)
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Refer to `./defaults/main.yml` comments
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+- community.general.iptables_state
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+ansible-playbook -i envs/sandbox -l openvpn -u debian playbook.yml
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yml
+- name: Install openvpn
+  hosts: openvpn
+  become: true
+  roles:
+    - openvpn
+```
 
 License
 -------
