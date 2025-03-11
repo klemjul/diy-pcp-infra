@@ -8,17 +8,15 @@ resource "null_resource" "ansible_openvpn_server" {
       sleep 20s;
       echo > /tmp/openvpn.ini;
       echo "[openvpn]" | tee -a /tmp/openvpn.ini;
-      echo "openvpn ansible_host=${openstack_networking_floatingip_v2.fip_1.address}" | tee -a /tmp/openvpn.ini;
+      echo "${module.instance_openvpn.instance_compute_name[0]} ansible_host=${module.instance_openvpn.instance_external_ip[0]}" | tee -a /tmp/openvpn.ini;
 
-      ANSIBLE_CONFIG=../ansible/ansible.cfg ansible-playbook -u debian -i /tmp/openvpn.ini \
+      ANSIBLE_CONFIG=../ansible/ansible.cfg ansible-playbook -u clouduser -i /tmp/openvpn.ini \
         -e @../ansible/envs/sandbox/group_vars/openvpn.yml \
         ../ansible/pb_openvpn.yml
     EOT
   }
   depends_on = [
-    openstack_compute_instance_v2.instance_openvpn,
-    openstack_networking_floatingip_v2.fip_1,
-    openstack_compute_floatingip_associate_v2.fip_assoc
+    module.instance_openvpn,
   ]
 }
 
@@ -31,7 +29,7 @@ resource "null_resource" "ansible_openvpn_server_client" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      ANSIBLE_CONFIG=../ansible/ansible.cfg ansible-playbook -u debian -i /tmp/openvpn.ini \
+      ANSIBLE_CONFIG=../ansible/ansible.cfg ansible-playbook -u clouduser -i /tmp/openvpn.ini \
         -e @../ansible/envs/sandbox/group_vars/openvpn.yml \
         -e "openvpn_client_user_list=['${each.value}']" \
         ../ansible/pb_openvpn_client.yml

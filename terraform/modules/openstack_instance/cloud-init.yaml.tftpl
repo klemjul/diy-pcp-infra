@@ -1,0 +1,15 @@
+#cloud-config
+bootcmd:
+  - printf "[Resolve]\nDNS=8.8.8.8 1.1.1.1\n" > /etc/systemd/resolved.conf
+  - [systemctl, restart, systemd-resolved]
+users:
+  - default
+  - name: clouduser
+    primary_group: clouduser
+    groups: [sudo,adm]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: sudo
+    shell: /bin/bash
+    lock_passwd: true
+    ssh-authorized-keys: 
+    - ${instance_ssh_key}

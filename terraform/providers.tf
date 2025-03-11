@@ -5,6 +5,10 @@ terraform {
       source  = "terraform-provider-openstack/openstack"
       version = "~> 1.53.0"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.0"
+    }
   }
   backend "s3" {
     key          = "terraform.diy-pcp-infra.tfstate"
