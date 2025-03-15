@@ -15,3 +15,13 @@ run = "cd terraform/vpn && terraform fmt"
 
 [tasks.ansible-lint]
 run = "cd ansible && ansible-lint"
+
+[tasks.ansible-install]
+run = """
+cd ansible
+ansible-galaxy collection install openstack.cloud
+ansible-galaxy collection install community.general
+"""
+
+[tasks.ansible-inventory]
+run = "cd ansible && ansible-inventory -i openstack.yml --list"

@@ -1,11 +1,13 @@
 variable "instance_network_external_name" {
   type        = string
   description = "Name of the existing external network"
+  default     = null
 }
 
 variable "instance_network_external_id" {
   type        = string
   description = "ID of the existing external network"
+  default     = null
 }
 
 variable "instance_name" {
@@ -24,7 +26,7 @@ variable "instance_flavor_name" {
 }
 
 variable "instance_security_groups" {
-  type        = list(any)
+  type        = list(string)
   default     = ["default"]
   description = "Openstack security group names"
 }
@@ -58,6 +60,10 @@ variable "public_floating_ip" {
   type        = bool
   default     = false
   description = "Determine if a public floating ip should be created"
+  validation {
+    condition     = !(var.public_floating_ip) || (var.instance_network_external_id != null && var.instance_network_external_name != null)
+    error_message = "When public_floating_ip is set to true, both instance_network_external_id and instance_network_external_name must be set."
+  }
 }
 
 variable "public_floating_ip_fixed" {

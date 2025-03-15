@@ -1,0 +1,8 @@
+plugin: openstack.cloud.openstack
+cache: yes
+cache_timeout: 600 
+all_projects: false
+expand_hostvars: true
+fail_on_errors: true
+strict: true
+private: true

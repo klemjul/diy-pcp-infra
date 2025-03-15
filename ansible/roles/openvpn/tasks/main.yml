@@ -145,13 +145,17 @@
     group: root
     mode: 0600
 
+- name: Get default network interface
+  ansible.builtin.set_fact:
+    openvpn_ethernet_network_interface: "{{ ansible_default_ipv4.interface }}"
+
 - name: Add iptables rule postrouting
   ansible.builtin.iptables:
     table: nat
     chain: POSTROUTING
     rule_num: "1"
     source: 10.8.0.0/24
-    out_interface: ens3
+    out_interface: "{{ openvpn_ethernet_network_interface }}"
     jump: MASQUERADE
 
 - name: Add iptables rule input tun0
@@ -165,7 +169,7 @@
   ansible.builtin.iptables:
     chain: FORWARD
     rule_num: "1"
-    in_interface: ens3
+    in_interface: "{{ openvpn_ethernet_network_interface }}"
     out_interface: tun0
     jump: ACCEPT
 
@@ -174,14 +178,14 @@
     chain: FORWARD
     rule_num: "1"
     in_interface: tun0
-    out_interface: ens3
+    out_interface: "{{ openvpn_ethernet_network_interface }}"
     jump: ACCEPT
 
 - name: Add iptables rule input port openvpn
   ansible.builtin.iptables:
     chain: INPUT
     rule_num: "1"
-    in_interface: ens3
+    in_interface: "{{ openvpn_ethernet_network_interface }}"
     jump: ACCEPT
     protocol: udp
     destination_port: "1194"

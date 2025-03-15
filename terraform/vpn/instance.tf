@@ -8,12 +8,13 @@ module "instance_openvpn" {
   instance_network_internal_id   = module.network.network_id
   instance_network_external_name = var.network_external_name
   instance_network_external_id   = var.network_external_id
+  instance_internal_fixed_ip     = "10.0.1.1" # static IP for OpenVPN server 10.0.1.11
   instance_image_id              = var.instance_image_id
   instance_count                 = 1
   public_floating_ip             = true
+  metadatas                      = { "app" = "openvpn", "project" = var.project_prefix }
   depends_on = [
     module.network,
     openstack_networking_secgroup_rule_v2.sg_openvpn_rule_udp_v4
-
   ]
 }
