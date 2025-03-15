@@ -4,15 +4,14 @@ python = "3.11"
 [env]
 _.python.venv = ".venv"
 
-[tasks.tf-init]
-run = "cd terraform && terraform init -backend-config=./backend.conf"
+[tasks.tf-vpn-init]
+run = "cd terraform/vpn && terraform init -backend-config=../backend.conf"
 
 [tasks.tf-lint]
-run = "cd terraform && tflint"
+run = "cd terraform/vpn && tflint"
 
 [tasks.tf-fmt]
-run = "cd terraform && terraform fmt"
-
+run = "cd terraform/vpn && terraform fmt"
 
 [tasks.ansible-lint]
 run = "cd ansible && ansible-lint"

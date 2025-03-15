@@ -1,6 +1,6 @@
 
 module "instance_openvpn" {
-  source                         = "./modules/openstack_instance"
+  source                         = "../modules/openstack_instance"
   instance_name                  = "${var.project_prefix}-openvpn"
   instance_ssh_key               = file(var.ssh_public_key_service_account_path)
   instance_key_pair              = openstack_compute_keypair_v2.ssh_public_key.name

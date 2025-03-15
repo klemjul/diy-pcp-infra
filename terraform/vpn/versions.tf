@@ -11,7 +11,7 @@ terraform {
     }
   }
   backend "s3" {
-    key          = "terraform.diy-pcp-infra.tfstate"
+    key          = "terraform.diy-pcp-vpn.tfstate"
     use_lockfile = true
   }
 }

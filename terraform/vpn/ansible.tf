@@ -10,9 +10,9 @@ resource "null_resource" "ansible_openvpn_server" {
       echo "[openvpn]" | tee -a /tmp/openvpn.ini;
       echo "${module.instance_openvpn.instance_compute_name[0]} ansible_host=${module.instance_openvpn.instance_external_ip[0]}" | tee -a /tmp/openvpn.ini;
 
-      ANSIBLE_CONFIG=../ansible/ansible.cfg ansible-playbook -u clouduser -i /tmp/openvpn.ini \
-        -e @../ansible/envs/sandbox/group_vars/openvpn.yml \
-        ../ansible/pb_openvpn.yml
+      ANSIBLE_CONFIG=../../ansible/ansible.cfg ansible-playbook -u clouduser -i /tmp/openvpn.ini \
+        -e @../../ansible/envs/sandbox/group_vars/openvpn.yml \
+        ../../ansible/pb_openvpn.yml
     EOT
   }
   depends_on = [
@@ -29,10 +29,10 @@ resource "null_resource" "ansible_openvpn_server_client" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      ANSIBLE_CONFIG=../ansible/ansible.cfg ansible-playbook -u clouduser -i /tmp/openvpn.ini \
-        -e @../ansible/envs/sandbox/group_vars/openvpn.yml \
+      ANSIBLE_CONFIG=../../ansible/ansible.cfg ansible-playbook -u clouduser -i /tmp/openvpn.ini \
+        -e @../../ansible/envs/sandbox/group_vars/openvpn.yml \
         -e "openvpn_client_user_list=['${each.value}']" \
-        ../ansible/pb_openvpn_client.yml
+        ../../ansible/pb_openvpn_client.yml
 
       rm -f /tmp/openvpn.ini;
     EOT
