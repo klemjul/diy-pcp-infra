@@ -7,6 +7,9 @@ _.python.venv = ".venv"
 [tasks.tf-vpn-init]
 run = "cd terraform/vpn && terraform init -backend-config=../backend.conf"
 
+[tasks.tf-infra-init]
+run = "cd terraform/infra && terraform init -backend-config=../backend.conf"
+
 [tasks.tf-lint]
 run = "cd terraform/vpn && tflint"
 

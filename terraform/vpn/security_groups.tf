@@ -111,3 +111,59 @@ resource "openstack_networking_secgroup_rule_v2" "sg_all_internal_rule_udp_v4" {
   remote_ip_prefix  = var.network_subnet_cidr
   security_group_id = openstack_networking_secgroup_v2.sg_all_internal.id
 }
+
+
+resource "openstack_networking_secgroup_v2" "sg_consul" {
+  name        = "${var.project_prefix}-sg-consul"
+  description = "https://developer.hashicorp.com/consul/docs/install/ports"
+}
+
+resource "openstack_networking_secgroup_rule_v2" "sg_rule_consul_dns_tcp" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 8600
+  port_range_max    = 8600
+  remote_ip_prefix  = var.network_subnet_cidr
+  security_group_id = openstack_networking_secgroup_v2.sg_consul.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "sg_rule_consul_dns_udp" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "udp"
+  port_range_min    = 8600
+  port_range_max    = 8600
+  remote_ip_prefix  = var.network_subnet_cidr
+  security_group_id = openstack_networking_secgroup_v2.sg_consul.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "sg_rule_consul_http_grpc" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 8500
+  port_range_max    = 8503
+  remote_ip_prefix  = var.network_subnet_cidr
+  security_group_id = openstack_networking_secgroup_v2.sg_consul.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "sg_rule_consul_wlan_tcp" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 8300
+  port_range_max    = 8302
+  remote_ip_prefix  = var.network_subnet_cidr
+  security_group_id = openstack_networking_secgroup_v2.sg_consul.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "sg_rule_consul_wlan_udp" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "udp"
+  port_range_min    = 8300
+  port_range_max    = 8302
+  remote_ip_prefix  = var.network_subnet_cidr
+  security_group_id = openstack_networking_secgroup_v2.sg_consul.id
+}

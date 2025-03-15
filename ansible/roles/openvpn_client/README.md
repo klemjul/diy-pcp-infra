@@ -6,7 +6,7 @@ This role is used to create and configure OpenVPN client certificates and config
 Requirements
 ------------
 
-- A Debian-based system (Debian 10/11 or Ubuntu 20.04/22.04) 
+- Debian 12
 - packages installed: `easyrsa`, `openvpn`
 
 Role Variables
@@ -17,18 +17,11 @@ Refer to `./defaults/main.yml` comments
 Dependencies
 ------------
 
-`ansible-playbook -i envs/sandbox -l openvpn -u debian pb_openvpn_client.yml`
 
 Example Playbook
 ----------------
 
-```yml
-- name: Install openvpn client(s)
-  hosts: openvpn
-  become: true
-  roles:
-    - openvpn_client
-```
+`ansible-playbook -i envs/sandbox -l openvpn -u clouduser pb_openvpn_client.yml`
 
 License
 -------

@@ -1,0 +1,7 @@
+- name: Consul master
+  hosts: meta-app_consul
+  become: true
+  vars:
+    consul_master: true
+  roles:
+    - consul

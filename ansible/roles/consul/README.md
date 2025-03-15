@@ -1,7 +1,7 @@
 Role Name
 =========
 
-This Ansible role automates the installation and configuration of OpenVPN.
+This Ansible role automates the installation and configuration of Consul.
 
 Requirements
 ------------
@@ -21,7 +21,8 @@ Dependencies
 Example Playbook
 ----------------
 
-`ansible-playbook -i envs/sandbox -l openvpn -u clouduser pb_openvpn.yml`
+`ansible-playbook -i openstack.yml -u clouduser pb_consul.yml`
+
 
 License
 -------
