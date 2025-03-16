@@ -1,17 +1,17 @@
 #cloud-config
 users:
   - default
-  - name: clouduser
-    primary_group: clouduser
+  - name: ${instance_default_user}
+    primary_group: ${instance_default_user}
     groups: [sudo, adm]
     shell: /bin/bash
     ssh-authorized-keys:
       - ${instance_ssh_key}
-%{ if instance_user_password_hash == null }
+%{ if instance_default_user_password_hash == null }
     sudo: ALL=(ALL) NOPASSWD:ALL
     lock_passwd: true
 %{ else }
     sudo: ALL=(ALL) ALL
     lock_passwd: false
-    passwd: ${instance_user_password_hash}
+    passwd: ${instance_default_user_password_hash}
 %{ endif }

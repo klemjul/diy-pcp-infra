@@ -31,7 +31,12 @@ variable "instance_flavor_name" {
   default = "a1-ram2-disk20-perf1"
 }
 
-variable "instance_user_password_hash" {
+variable "instance_default_user_password_hash" {
   type    = string
   default = null
+}
+
+variable "instance_default_user" {
+  type    = string
+  default = "clouduser"
 }

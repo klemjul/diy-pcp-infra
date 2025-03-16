@@ -1,0 +1,20 @@
+- name: Hardening
+  hosts: all
+  become: true
+  vars:
+    sysctl_overwrite:
+      net.ipv4.ip_forward: 1
+    ssh_banner: true
+    ssh_print_motd: true
+    ssh_print_last_log: true
+    sftp_enabled: true
+    ssh_permit_tunnel: "no"
+    ssh_allow_tcp_forwarding: "yes"
+  pre_tasks:
+    - name: Waiting compute...
+      ansible.builtin.wait_for_connection:
+        delay: 2
+        timeout: 300
+  roles:
+    - devsec.hardening.os_hardening
+    - devsec.hardening.ssh_hardening

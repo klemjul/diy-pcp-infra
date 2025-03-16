@@ -42,7 +42,13 @@ variable "openvpn_client_user_list" {
   default = ["user1"]
 }
 
-variable "instance_user_password_hash" {
+variable "instance_default_user_password_hash" {
   type    = string
   default = null
+}
+
+variable "instance_default_user" {
+  type        = string
+  description = "default user"
+  default     = "clouduser"
 }

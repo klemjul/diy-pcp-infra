@@ -102,8 +102,13 @@ variable "instance_volumes_type" {
   default = "CEPH_1_perf1"
 }
 
-variable "instance_user_password_hash" {
+variable "instance_default_user_password_hash" {
   type        = string
-  description = "enable password on sudo commands, generate a hash via: openssl passwd -6 ''"
+  description = "enable password on sudo commands for default user, generate a hash via: openssl passwd -6 ''"
   default     = null
+}
+variable "instance_default_user" {
+  type        = string
+  description = "default user"
+  default     = "clouduser"
 }

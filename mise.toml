@@ -24,7 +24,18 @@ run = """
 cd ansible
 ansible-galaxy collection install openstack.cloud
 ansible-galaxy collection install community.general
+ansible-galaxy collection install devsec.hardening
 """
 
 [tasks.ansible-inventory]
 run = "cd ansible && ansible-inventory -i openstack.yml --list"
+
+[tasks.ansible-all]
+description = "require ansible-inventory and credentials (ssh, cloud)"
+run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all.yml"
+
+[tasks.ansible-consul]
+run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_consul.yml"
+
+[tasks.ansible-all-hardening]
+run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_hardening.yml"
