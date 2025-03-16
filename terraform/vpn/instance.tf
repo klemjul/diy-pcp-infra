@@ -12,6 +12,7 @@ module "instance_openvpn" {
   instance_image_id              = var.instance_image_id
   instance_count                 = 1
   public_floating_ip             = true
+  instance_user_password_hash    = var.instance_user_password_hash
   metadatas                      = { "app" = "openvpn", "project" = var.project_prefix }
   depends_on = [
     module.network,

@@ -3,7 +3,19 @@ variable "network_name" {
 }
 
 variable "network_subnet_cidr" {
-  type = string
+  type    = string
+  default = "10.0.1.0/24"
+}
+
+variable "network_subnet_allocation_pool" {
+  type = object({
+    start = string
+    end   = string
+  })
+  default = {
+    start = "10.0.1.50"
+    end   = "10.0.1.200"
+  }
 }
 
 variable "network_subnet_ip_version" {

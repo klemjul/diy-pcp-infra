@@ -10,6 +10,10 @@ resource "openstack_networking_subnet_v2" "network_subnet" {
   ip_version      = var.network_subnet_ip_version
   enable_dhcp     = var.network_subnet_dhcp_enable
   dns_nameservers = var.network_subnet_dns
+  allocation_pool {
+    start = var.network_subnet_allocation_pool.start
+    end   = var.network_subnet_allocation_pool.end
+  }
 }
 
 resource "openstack_networking_router_interface_v2" "network_router_interface" {

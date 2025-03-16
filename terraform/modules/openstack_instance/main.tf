@@ -12,7 +12,8 @@ resource "openstack_compute_instance_v2" "instance" {
   security_groups = var.instance_security_groups
   key_pair        = var.instance_key_pair
   user_data = templatefile("${path.module}/cloud-init.yaml.tftpl", {
-    instance_ssh_key = var.instance_ssh_key,
+    instance_ssh_key            = var.instance_ssh_key,
+    instance_user_password_hash = var.instance_user_password_hash
   })
   network {
     uuid        = var.instance_network_internal_id

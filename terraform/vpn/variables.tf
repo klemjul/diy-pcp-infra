@@ -41,3 +41,8 @@ variable "openvpn_client_user_list" {
   type    = list(any)
   default = ["user1"]
 }
+
+variable "instance_user_password_hash" {
+  type    = string
+  default = null
+}

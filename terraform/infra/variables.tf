@@ -30,3 +30,8 @@ variable "instance_flavor_name" {
   type    = string
   default = "a1-ram2-disk20-perf1"
 }
+
+variable "instance_user_password_hash" {
+  type    = string
+  default = null
+}

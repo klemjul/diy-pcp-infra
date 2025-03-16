@@ -3,10 +3,15 @@ users:
   - default
   - name: clouduser
     primary_group: clouduser
-    groups: [sudo,adm]
-    sudo: ALL=(ALL) NOPASSWD:ALL
-    groups: sudo
+    groups: [sudo, adm]
     shell: /bin/bash
+    ssh-authorized-keys:
+      - ${instance_ssh_key}
+%{ if instance_user_password_hash == null }
+    sudo: ALL=(ALL) NOPASSWD:ALL
     lock_passwd: true
-    ssh-authorized-keys: 
-    - ${instance_ssh_key}
+%{ else }
+    sudo: ALL=(ALL) ALL
+    lock_passwd: false
+    passwd: ${instance_user_password_hash}
+%{ endif }
