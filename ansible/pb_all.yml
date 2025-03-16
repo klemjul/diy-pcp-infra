@@ -1,0 +1,11 @@
+- name: Base
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Waiting compute...
+      ansible.builtin.wait_for_connection:
+        delay: 2
+        timeout: 300
+  roles:
+    - base
+    - dns_common

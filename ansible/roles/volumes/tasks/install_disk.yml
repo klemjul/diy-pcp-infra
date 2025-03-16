@@ -4,12 +4,27 @@
     dev: "{{ item.disk }}"
     force: false # Avoids reformatting if the filesystem already exists
 
+- name: "Create group {{ item.owner }}"
+  ansible.builtin.group:
+    name: "{{ item.owner }}"
+    system: yes
+    state: present
+  when: item.owner
+
+- name: "Create user {{ item.owner }}"
+  ansible.builtin.user:
+    name: "{{ item.owner }}"
+    system: yes
+    shell: /sbin/nologin
+    state: present
+  when: item.owner
+
 - name: Ensure mount directory exists
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     owner: "{{ item.owner | default('root') }}"
-    group: "{{ item.group | default(item.owner | default('root')) }}"
+    group: "{{ item.owner | default('root') }}"
     mode: "{{ item.mode | default('0750') }}"
 
 - name: Retrieve UUID of the disk

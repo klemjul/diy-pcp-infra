@@ -53,6 +53,7 @@
     - "setenv opt block-outside-dns"
     - "verify-x509-name server_{{ openvpn_server_name }} name"
     - "verb 3"
+    - "dhcp-option DNS {{ ansible_default_ipv4.address }}"
   loop_control:
     loop_var: lines
 
