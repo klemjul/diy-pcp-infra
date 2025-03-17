@@ -22,14 +22,3 @@ Example Playbook
 ----------------
 
 `ansible-playbook -i openstack.yml -u clouduser pb_consul.yml`
-
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).

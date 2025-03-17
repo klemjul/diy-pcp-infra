@@ -95,8 +95,8 @@ resource "openstack_networking_secgroup_rule_v2" "sg_all_internal_rule_tcp_v4" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
-  port_range_min    = 1
-  port_range_max    = 65535
+  port_range_min    = 0 # 1
+  port_range_max    = 0 # 65535
   remote_ip_prefix  = var.network_subnet_cidr
   security_group_id = openstack_networking_secgroup_v2.sg_all_internal.id
 }
@@ -106,8 +106,8 @@ resource "openstack_networking_secgroup_rule_v2" "sg_all_internal_rule_udp_v4" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "udp"
-  port_range_min    = 1
-  port_range_max    = 65535
+  port_range_min    = 0 # 1
+  port_range_max    = 0 # 65535
   remote_ip_prefix  = var.network_subnet_cidr
   security_group_id = openstack_networking_secgroup_v2.sg_all_internal.id
 }

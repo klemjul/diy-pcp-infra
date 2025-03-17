@@ -1,0 +1,16 @@
+- name: Consul services for all servers
+  become: yes
+  hosts: all
+  serial: 40
+  gather_facts: no
+  roles:
+    - consul_services
+  vars:
+    consul_services_list:
+      - {
+          name: "node_exporter",
+          type: "http",
+          check_target: "http://127.0.0.1:9100",
+          interval: "10s",
+          port: 9100,
+        }
