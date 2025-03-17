@@ -9,3 +9,4 @@
   roles:
     - base
     - dns_common
+    - node_exporter

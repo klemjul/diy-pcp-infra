@@ -8,7 +8,7 @@
 
 - name: Install utils
   ansible.builtin.apt:
-    name: curl,wget,unzip,net-tools,dnsutils
+    name: curl,wget,unzip,net-tools,dnsutils,jq
     state: present
     update_cache: yes
     cache_valid_time: 3600

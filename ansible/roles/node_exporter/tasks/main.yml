@@ -1,0 +1,74 @@
+---
+# tasks file for roles/node_exporter
+
+- name: Check if node exporter exist
+  ansible.builtin.stat:
+    path: "{{ node_exporter_bin }}"
+  register: __check_node_exporter_present
+
+- name: If node exporter exist get version
+  ansible.builtin.shell: "cat /etc/systemd/system/node_exporter.service | grep Version | sed s/'.*Version '//g"
+  register: __get_node_exporter_version
+  when: __check_node_exporter_present.stat.exists
+  tags:
+    - skip_ansible_lint
+  changed_when: false
+
+- name: Create node exporter user
+  ansible.builtin.user:
+    name: "{{ node_exporter_user }}"
+    shell: /usr/sbin/nologin
+    system: true
+    create_home: false
+
+- name: Create node exporter config dir
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ node_exporter_user }}"
+    group: "{{ node_exporter_group }}"
+    mode: "0750"
+  loop:
+    - "{{ node_exporter_dir_conf }}"
+    - "{{ node_exporter_dir_data }}"
+
+- name: Download and unzip node exporter if not exist
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+    validate_certs: true
+  when: not __check_node_exporter_present.stat.exists or not __get_node_exporter_version.stdout == node_exporter_version
+
+- name: Move the binary to the final destination
+  ansible.builtin.copy:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+    dest: "{{ node_exporter_bin }}"
+    owner: "{{ node_exporter_user }}"
+    group: "{{ node_exporter_group }}"
+    mode: 0750
+    remote_src: yes
+  when: not __check_node_exporter_present.stat.exists or not __get_node_exporter_version.stdout == node_exporter_version
+
+- name: Clean
+  ansible.builtin.file:
+    path: /tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/
+    state: absent
+
+- name: Install service
+  ansible.builtin.template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: 0750
+  notify: Reload_daemon_and_restart_node_exporter
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Service always started
+  ansible.builtin.systemd:
+    name: node_exporter
+    state: started
+    enabled: yes

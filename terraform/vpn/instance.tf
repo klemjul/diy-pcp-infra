@@ -8,6 +8,7 @@ module "instance_openvpn" {
     openstack_networking_secgroup_v2.sg_openvpn.name,
     openstack_networking_secgroup_v2.sg_ssh.name,
     openstack_networking_secgroup_v2.sg_consul.name,
+    openstack_networking_secgroup_v2.sg_node_exporter.name,
     "default"
   ]
   instance_network_internal_id        = module.network.network_id
@@ -21,6 +22,12 @@ module "instance_openvpn" {
   metadatas                           = { "app" = "openvpn", "project" = var.project_prefix }
   depends_on = [
     module.network,
-    openstack_networking_secgroup_rule_v2.sg_openvpn_rule_udp_v4
+    openstack_networking_secgroup_rule_v2.sg_openvpn_rule_udp_v4,
+    openstack_networking_secgroup_rule_v2.sg_openvpn_rule_tcp_v4,
+    openstack_networking_secgroup_rule_v2.sg_ssh_rule_v4,
+    openstack_networking_secgroup_rule_v2.sg_rule_consul_dns_tcp,
+    openstack_networking_secgroup_rule_v2.sg_rule_consul_dns_udp,
+    openstack_networking_secgroup_rule_v2.sg_rule_consul_http_grpc,
+    openstack_networking_secgroup_rule_v2.sg_rule_node_exporter,
   ]
 }

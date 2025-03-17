@@ -9,7 +9,7 @@
     name: "{{ item.owner }}"
     system: yes
     state: present
-  when: item.owner
+  when: item.owner is defined
 
 - name: "Create user {{ item.owner }}"
   ansible.builtin.user:
@@ -17,7 +17,7 @@
     system: yes
     shell: /sbin/nologin
     state: present
-  when: item.owner
+  when: item.owner is defined
 
 - name: Ensure mount directory exists
   ansible.builtin.file:

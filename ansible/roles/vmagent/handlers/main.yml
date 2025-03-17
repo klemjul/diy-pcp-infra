@@ -1,0 +1,9 @@
+---
+# handlers file for roles/vmagent
+
+- name: Restart vmagent
+  ansible.builtin.systemd:
+    name: vmagent
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

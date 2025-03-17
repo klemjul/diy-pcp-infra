@@ -31,11 +31,21 @@ ansible-galaxy collection install devsec.hardening
 run = "cd ansible && ansible-inventory -i openstack.yml --list"
 
 [tasks.ansible-all]
-description = "require ansible-inventory and credentials (ssh, cloud)"
 run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all.yml"
+depends = "ansible-inventory"
 
 [tasks.ansible-consul]
 run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_consul.yml"
+description = "run after ansible-all"
+
+[tasks.ansible-all-consul-services]
+run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_consul_services.yml"
+description = "run after ansible-consul"
+
+[tasks.ansible-monitoring]
+run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_monitoring.yml"
+description = "run after ansible-all-consul-services"
 
 [tasks.ansible-all-hardening]
 run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_hardening.yml"
+depends = "ansible-all"

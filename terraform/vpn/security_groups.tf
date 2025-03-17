@@ -95,10 +95,13 @@ resource "openstack_networking_secgroup_rule_v2" "sg_all_internal_rule_tcp_v4" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
-  port_range_min    = 0 # 1
-  port_range_max    = 0 # 65535
+  port_range_min    = 1
+  port_range_max    = 65535
   remote_ip_prefix  = var.network_subnet_cidr
   security_group_id = openstack_networking_secgroup_v2.sg_all_internal.id
+  lifecycle {
+    ignore_changes = [port_range_min, port_range_max]
+  }
 }
 
 resource "openstack_networking_secgroup_rule_v2" "sg_all_internal_rule_udp_v4" {
@@ -106,10 +109,13 @@ resource "openstack_networking_secgroup_rule_v2" "sg_all_internal_rule_udp_v4" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "udp"
-  port_range_min    = 0 # 1
-  port_range_max    = 0 # 65535
+  port_range_min    = 1
+  port_range_max    = 65535
   remote_ip_prefix  = var.network_subnet_cidr
   security_group_id = openstack_networking_secgroup_v2.sg_all_internal.id
+  lifecycle {
+    ignore_changes = [port_range_min, port_range_max]
+  }
 }
 
 
@@ -166,4 +172,20 @@ resource "openstack_networking_secgroup_rule_v2" "sg_rule_consul_wlan_udp" {
   port_range_max    = 8302
   remote_ip_prefix  = var.network_subnet_cidr
   security_group_id = openstack_networking_secgroup_v2.sg_consul.id
+}
+
+
+resource "openstack_networking_secgroup_v2" "sg_node_exporter" {
+  name        = "${var.project_prefix}-sg-node-exporter"
+  description = "allow node_exporter from internal network"
+}
+
+resource "openstack_networking_secgroup_rule_v2" "sg_rule_node_exporter" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 9100
+  port_range_max    = 9100
+  remote_ip_prefix  = var.network_subnet_cidr
+  security_group_id = openstack_networking_secgroup_v2.sg_node_exporter.id
 }
