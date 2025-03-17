@@ -39,15 +39,15 @@ depends = "ansible-inventory"
 
 [tasks.ansible-consul]
 run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_consul.yml"
-description = "run after ansible-all"
+depends = "ansible-all"
 
 [tasks.ansible-all-consul-services]
 run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_consul_services.yml"
-description = "run after ansible-consul"
+depends = "ansible-consul"
 
 [tasks.ansible-monitoring]
 run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_monitoring.yml"
-description = "run after ansible-all-consul-services"
+depends = "ansible-all-consul-services"
 
 [tasks.ansible-all-hardening]
 run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_hardening.yml"

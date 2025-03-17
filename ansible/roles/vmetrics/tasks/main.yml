@@ -1,0 +1,54 @@
+---
+# tasks file for roles/vmetrics
+
+- name: Check if vmetrics exists
+  ansible.builtin.stat:
+    path: /usr/local/bin/victoria-metrics-prod
+  register: __vmetrics_exists
+
+- name: If vmetrics exists get version
+  ansible.builtin.shell: "cat /etc/systemd/system/vmetrics.service | grep Version | sed s/'.*Version '//g"
+  register: __get_vmetrics_version
+  when: __vmetrics_exists.stat.exists
+  tags:
+    - skip_ansible_lint
+  changed_when: false
+
+- name: Create user vmetrics
+  ansible.builtin.user:
+    name: "{{ vmetrics_user }}"
+    system: yes
+    shell: /sbin/nologin
+    state: present
+
+- name: Create vmetrics directory
+  ansible.builtin.file:
+    path: "{{ vmetrics_dir_data }}"
+    state: directory
+    owner: "{{ vmetrics_user }}"
+    group: "{{ vmetrics_user }}"
+    mode: 0750
+    recurse: yes
+
+- name: Download vmetrics
+  ansible.builtin.unarchive:
+    src: https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v{{ vmetrics_version }}/victoria-metrics-linux-amd64-v{{ vmetrics_version }}.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
+  when: not __vmetrics_exists.stat.exists or not __get_vmetrics_version.stdout == vmetrics_version
+
+- name: Vmetrics configuration file
+  ansible.builtin.template:
+    src: vmetrics.service.j2
+    dest: /etc/systemd/system/vmetrics.service
+    mode: 0750
+  notify: Restart vmetrics
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Start vmetrics
+  ansible.builtin.systemd:
+    name: vmetrics
+    state: started
+    enabled: yes

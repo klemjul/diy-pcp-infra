@@ -4,9 +4,11 @@
   roles:
     - volumes
     - vmagent
+    - vmetrics
     - consul_services
   vars:
     vmagent_dir_disk_data: "/data"
+    vmetrics_dir_disk_data: "/data"
     volumes_disks:
       - { disk: "/dev/sdb", path: "{{ vmagent_dir_disk_data }}" }
     consul_services_list:
@@ -16,4 +18,11 @@
           check_target: "http://127.0.0.1:8429",
           interval: "20s",
           port: 8429,
+        }
+      - {
+          name: "vmetrics",
+          type: "http",
+          check_target: "http://127.0.0.1:8428",
+          interval: "20s",
+          port: 8428,
         }
