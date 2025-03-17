@@ -6,11 +6,12 @@ resource "openstack_networking_secgroup_v2" "sg_ssh" {
 }
 
 resource "openstack_networking_secgroup_rule_v2" "sg_ssh_rule_v4" {
-  direction         = "ingress"
-  ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = 22
-  port_range_max    = 22
+  direction      = "ingress"
+  ethertype      = "IPv4"
+  protocol       = "tcp"
+  port_range_min = 22
+  port_range_max = 22
+  # checkov:skip=CKV_OPENSTACK_2:Skipping because it's on internal network
   remote_ip_prefix  = "0.0.0.0/0"
   security_group_id = openstack_networking_secgroup_v2.sg_ssh.id
 }

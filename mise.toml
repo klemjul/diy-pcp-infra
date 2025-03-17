@@ -4,6 +4,9 @@ python = "3.11"
 [env]
 _.python.venv = ".venv"
 
+[tasks.pre-commit-init]
+run = "pre-commit install"
+
 [tasks.tf-vpn-init]
 run = "cd terraform/vpn && terraform init -backend-config=../backend.conf"
 
