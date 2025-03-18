@@ -9,7 +9,7 @@ module "instance_openvpn" {
     openstack_networking_secgroup_v2.sg_ssh.name,
     openstack_networking_secgroup_v2.sg_consul.name,
     openstack_networking_secgroup_v2.sg_node_exporter.name,
-    "default"
+    openstack_networking_secgroup_v2.sg_all_internal.name,
   ]
   instance_network_internal_id        = module.network.network_id
   instance_network_external_name      = var.network_external_name
@@ -29,5 +29,6 @@ module "instance_openvpn" {
     openstack_networking_secgroup_rule_v2.sg_rule_consul_dns_udp,
     openstack_networking_secgroup_rule_v2.sg_rule_consul_http_grpc,
     openstack_networking_secgroup_rule_v2.sg_rule_node_exporter,
+    openstack_networking_secgroup_rule_v2.sg_all_internal_rule_tcp_v4
   ]
 }
