@@ -3,14 +3,16 @@
   hosts: meta-app_monitoring
   roles:
     - volumes
-    - vmagent
+    - vmtools
     - vmetrics
     - consul_services
   vars:
-    vmagent_dir_disk_data: "/data"
+    vmtools_dir_disk_data: "/data"
     vmetrics_dir_disk_data: "/data"
+    vmtools_vmalert_remote: vmetrics.service.sandbox.consul
+    vmtools_vmalert_grafana: grafana.service.sandbox.consul
     volumes_disks:
-      - { disk: "/dev/sdb", path: "{{ vmagent_dir_disk_data }}" }
+      - { disk: "/dev/sdb", path: "{{ vmtools_dir_disk_data }}" }
     consul_services_list:
       - {
           name: "vmagent",
@@ -25,4 +27,11 @@
           check_target: "http://127.0.0.1:8428",
           interval: "20s",
           port: 8428,
+        }
+      - {
+          name: "vmalert",
+          type: "http",
+          check_target: "http://127.0.0.1:8880",
+          interval: "20s",
+          port: 8880,
         }

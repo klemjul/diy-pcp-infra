@@ -1,0 +1,17 @@
+[Unit]
+Description=Description=VictoriaAgent service Version {{ vmtools_version }}
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/vmagent-prod \
+       -promscrape.config={{vmtools_vmagent_dir_config}}/vmagent.yml \
+       -remoteWrite.tmpDataPath={{ vmtools_vmagent_dir_data }} \
+       -remoteWrite.url=http://{{ vmtools_vmagent_remotewrite }}/api/v1/write \
+       -promscrape.config.strictParse=false
+
+SyslogIdentifier=vmagent
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,19 @@
+---
+# defaults file for roles/vmtools
+vmtools_dir_disk_data: ""
+vmtools_version: 1.113.0
+
+vmtools_vmagent_dir_data: "{{ vmtools_dir_disk_data }}/var/lib/vmagent"
+vmtools_vmagent_dir_config: "/etc/vmagent"
+vmtools_vmagent_remotewrite: "127.0.0.1:8428"
+vmtools_vmagent_scrape_interval: 10s
+vmtools_vmagent_env: dev
+vmtools_vmagent_var_config:
+  global:
+    scrape_interval: "{{ vmtools_vmagent_scrape_interval }}"
+    external_labels:
+      env: "{{ vmtools_vmagent_env }}"
+
+vmtools_vmalert_dir_config: "/etc/vmalert"
+vmtools_vmalert_remote: ""
+vmtools_vmalert_grafana: ""
