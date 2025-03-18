@@ -1,12 +1,13 @@
 Role Name
 =========
 
-This Ansible role installs and configures Alertmanager.
+This Ansible role installs and configures Grafana. Grafana is an analytics and visualization platform for monitoring and observability.
 
 Requirements
 ------------
 
 - Debian 12
+- gnupg,software-properties-common
 
 Role Variables
 --------------

@@ -1,0 +1,72 @@
+---
+# tasks file for roles/grafana
+
+- name: Add gpg hey
+  ansible.builtin.apt_key:
+    url: "https://packages.grafana.com/gpg.key"
+    validate_certs: yes
+
+- name: Add repository
+  ansible.builtin.apt_repository:
+    repo: "deb https://packages.grafana.com/oss/deb stable main"
+    state: present
+    validate_certs: yes
+
+- name: Install grafana
+  ansible.builtin.apt:
+    name: grafana
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Change admin user
+  ansible.builtin.lineinfile:
+    path: /etc/grafana/grafana.ini
+    regexp: "{{ item.before }}"
+    line: "{{ item.after }}"
+  with_items:
+    - {
+        before: "^;admin_user = admin",
+        after: "admin_user = {{ grafana_admin_user }}",
+      }
+    - {
+        before: "^;admin_password = admin",
+        after: "admin_password = {{ grafana_admin_password }}",
+      }
+
+- name: Add victoriametrics datasource
+  community.grafana.grafana_datasource:
+    name: "VictoriaMetrics"
+    grafana_url: "http://127.0.0.1:3000"
+    grafana_user: "{{ grafana_admin_user }}"
+    grafana_password: "{{ grafana_admin_password }}"
+    org_id: "1"
+    ds_type: "prometheus"
+    ds_url: "http://{{ grafana_prometheus_address }}"
+  changed_when: false
+  ignore_errors: true # noqa: ignore-errors
+
+- name: "Create dashboard - {{ item.label }}"
+  ansible.builtin.include_tasks: create_dashboard.yml
+  with_items: "{{ grafana_dashboards }}"
+
+- name: Start service grafana-server
+  ansible.builtin.systemd:
+    name: grafana-server
+    state: started
+    enabled: yes
+
+- name: Wait for service up
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:3000" # checkov:skip=CKV2_ANSIBLE_1
+    status_code: 200
+  register: __result
+  until: __result.status == 200
+  retries: 120
+  delay: 1
+
+- name: Change admin password for Grafana GUI
+  ansible.builtin.command:
+    cmd: "grafana-cli admin reset-admin-password {{ grafana_admin_password }}"
+  register: __command_admin
+  changed_when: "'Admin password changed successfully' in __command_admin.stdout"

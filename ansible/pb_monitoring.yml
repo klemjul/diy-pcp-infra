@@ -7,6 +7,7 @@
     - monitoring/vmetrics
     - monitoring/alertmanager
     - monitoring/karma
+    - monitoring/grafana
     - consul_services
   vars:
     vmtools_dir_disk_data: "/data"
@@ -14,6 +15,12 @@
     vmtools_vmalert_remote: vmetrics.service.sandbox.consul
     vmtools_vmalert_grafana: grafana.service.sandbox.consul
     karma_alertmanager_uri: "http://alertmanager.service.sandbox.consul:9093"
+    grafana_prometheus_address: "vmetrics.service.sandbox.consul:8428"
+    grafana_dashboards:
+      - {
+          label: "node-exporter",
+          json_url: "https://raw.githubusercontent.com/rfrail3/grafana-dashboards/master/prometheus/node-exporter-full.json",
+        }
     volumes_disks:
       - { disk: "/dev/sdb", path: "{{ vmtools_dir_disk_data }}" }
     consul_services_list:
@@ -51,4 +58,11 @@
           target: "http://127.0.0.1:8080",
           interval: "10s",
           port: 8080,
+        }
+      - {
+          name: "grafana",
+          type: "http",
+          target: "http://127.0.0.1:3000",
+          interval: "10s",
+          port: 3000,
         }

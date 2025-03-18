@@ -1,7 +1,7 @@
 Role Name
 =========
 
-This Ansible role installs and configures Alertmanager.
+This Ansible role automates the deployment and management of Node exporter, a exporter that collects and exposes system metrics.
 
 Requirements
 ------------

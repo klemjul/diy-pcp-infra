@@ -1,0 +1,20 @@
+- name: "Download dashboard - {{ item.label }}"
+  ansible.builtin.get_url:
+    url: "{{ item.json_url }}"
+    dest: "/var/lib/grafana/{{ item.label }}.json"
+    mode: "0755"
+  notify: Restart grafana
+
+- name: Change datasource in dashboards
+  ansible.builtin.replace:
+    path: "/var/lib/grafana/{{ item.label }}.json"
+    regexp: '^(.*)\$\{DS_PROMETHEUS\}(.*)$'
+    replace: '\1VictoriaMetrics\2'
+    backup: yes
+
+- name: "Activate dashboard for {{ item.label }}"
+  ansible.builtin.template:
+    src: dashboard-register.yml.j2
+    dest: /etc/grafana/provisioning/dashboards/{{ item.label }}.yml
+    mode: 0755
+  notify: Restart grafana
