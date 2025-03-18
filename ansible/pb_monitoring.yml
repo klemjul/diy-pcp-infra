@@ -3,10 +3,10 @@
   hosts: meta-app_monitoring
   roles:
     - volumes
-    - vmtools
-    - vmetrics
-    - alertmanager
-    - karma
+    - monitoring/vmtools
+    - monitoring/vmetrics
+    - monitoring/alertmanager
+    - monitoring/karma
     - consul_services
   vars:
     vmtools_dir_disk_data: "/data"
