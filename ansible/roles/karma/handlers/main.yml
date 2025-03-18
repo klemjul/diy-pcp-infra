@@ -1,0 +1,9 @@
+---
+# handlers file for roles/karma
+
+- name: Restart karma
+  ansible.builtin.systemd:
+    name: karma
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

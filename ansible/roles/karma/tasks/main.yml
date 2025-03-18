@@ -1,0 +1,72 @@
+---
+# tasks file for roles/karma
+
+- name: Check if karma exists
+  ansible.builtin.stat:
+    path: /usr/local/bin/karma
+  register: __karma_exists
+
+- name: If karma exists get version
+  ansible.builtin.shell: "cat /etc/systemd/system/karma.service | grep Version | sed s/'.*Version '//g"
+  register: __get_karma_version
+  when: __karma_exists.stat.exists
+  tags:
+    - skip_ansible_lint
+  changed_when: false
+
+- name: Create user karma
+  ansible.builtin.user:
+    name: "{{ karma_user }}"
+    system: yes
+    shell: /sbin/nologin
+    state: present
+
+- name: Create directory for karma configuration
+  ansible.builtin.file:
+    path: "{{ karma_dir_config }}"
+    state: directory
+    owner: "{{ karma_user }}"
+    group: "{{ karma_user }}"
+    mode: 0750
+
+- name: Download karma
+  ansible.builtin.unarchive:
+    src: "https://github.com/prymitive/karma/releases/download/v{{ karma_version }}/karma-linux-amd64.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+  when: not __karma_exists.stat.exists or not __get_karma_version.stdout == karma_version
+
+- name: Move the binary to the final destination
+  ansible.builtin.copy:
+    src: "/tmp/karma-linux-amd64"
+    dest: "/usr/local/bin/karma"
+    mode: 0750
+    owner: "{{ karma_user }}"
+    group: "{{ karma_user }}"
+    remote_src: yes
+  when: not __karma_exists.stat.exists or not __get_karma_version.stdout == karma_version
+
+- name: Karma systemd file
+  ansible.builtin.template:
+    src: "karma.service.j2"
+    dest: "/etc/systemd/system/karma.service"
+    mode: 0750
+  notify: "Restart karma"
+
+- name: Karma configuration file
+  ansible.builtin.template:
+    src: "karma.yml.j2"
+    dest: "{{ karma_dir_config }}/karma.yml"
+    mode: 0750
+    owner: "{{ karma_user }}"
+    group: "{{ karma_user }}"
+  notify: "Restart karma"
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Start karma
+  ansible.builtin.systemd:
+    name: karma
+    state: started
+    enabled: yes

@@ -1,0 +1,9 @@
+---
+# handlers file for roles/alertmanager
+
+- name: Restart alertmanager
+  ansible.builtin.systemd:
+    name: alertmanager
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

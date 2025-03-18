@@ -5,12 +5,15 @@
     - volumes
     - vmtools
     - vmetrics
+    - alertmanager
+    - karma
     - consul_services
   vars:
     vmtools_dir_disk_data: "/data"
     vmetrics_dir_disk_data: "/data"
     vmtools_vmalert_remote: vmetrics.service.sandbox.consul
     vmtools_vmalert_grafana: grafana.service.sandbox.consul
+    karma_alertmanager_uri: "http://alertmanager.service.sandbox.consul:9093"
     volumes_disks:
       - { disk: "/dev/sdb", path: "{{ vmtools_dir_disk_data }}" }
     consul_services_list:
@@ -34,4 +37,18 @@
           check_target: "http://127.0.0.1:8880",
           interval: "20s",
           port: 8880,
+        }
+      - {
+          name: "alertmanager",
+          type: "http",
+          check_target: "http://127.0.0.1:9093",
+          interval: "20s",
+          port: 9093,
+        }
+      - {
+          name: "karma",
+          type: "http",
+          target: "http://127.0.0.1:8080",
+          interval: "10s",
+          port: 8080,
         }

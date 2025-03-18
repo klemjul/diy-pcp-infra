@@ -1,0 +1,85 @@
+---
+# tasks file for roles/alertmanager
+
+- name: Check if alertmanager exists
+  ansible.builtin.stat:
+    path: /usr/local/bin/alertmanager
+  register: __alertmanager_exists
+
+- name: If alertmanager exists get version
+  ansible.builtin.shell: "cat /etc/systemd/system/alertmanager.service | grep Version | sed s/'.*Version '//g"
+  register: __get_alertmanager_version
+  when: __alertmanager_exists.stat.exists
+  tags:
+    - skip_ansible_lint
+  changed_when: false
+
+- name: Create user alertmanager
+  ansible.builtin.user:
+    name: "{{ alertmanager_user }}"
+    system: yes
+    shell: /sbin/nologin
+    state: present
+
+- name: Create directories for alertmanager configuration
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    recurse: true
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_user }}"
+  loop:
+    - "{{ alertmanager_dir_config }}"
+    - "{{ alertmanager_dir_data }}"
+
+- name: Download alertmanager
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager_version }}/alertmanager-{{ alertmanager_version }}.linux-amd64.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+  when: not __alertmanager_exists.stat.exists or not __get_alertmanager_version.stdout == alertmanager_version
+
+- name: Move the binary to the final destination
+  ansible.builtin.copy:
+    src: "/tmp/alertmanager-{{ alertmanager_version }}.linux-amd64/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: 0750
+    remote_src: yes
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_user }}"
+  loop:
+    - alertmanager
+    - amtool
+  when: not __alertmanager_exists.stat.exists or not __get_alertmanager_version.stdout == alertmanager_version
+
+- name: Clean
+  ansible.builtin.file:
+    path: "/tmp/alertmanager-{{ alertmanager_version }}.linux-amd64/"
+    state: absent
+  when: not __alertmanager_exists.stat.exists or not __get_alertmanager_version.stdout == alertmanager_version
+
+- name: Alertmanager systemd file
+  ansible.builtin.template:
+    src: "alertmanager.service.j2"
+    dest: "/etc/systemd/system/alertmanager.service"
+    mode: 0750
+  notify: "Restart alertmanager"
+
+- name: Alertmanager configuration file
+  ansible.builtin.template:
+    src: "alertmanager.yml.j2"
+    dest: "/etc/alertmanager/alertmanager.yml"
+    mode: 0750
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_user }}"
+  notify: "Restart alertmanager"
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Start alertmanager
+  ansible.builtin.systemd:
+    name: alertmanager
+    state: started
+    enabled: yes
