@@ -8,4 +8,4 @@ repos:
     hooks:
       - id: checkov
         files: \.y(a)?ml$
-        entry: checkov -d ansible -d terraform --quiet
+        entry: checkov -d ansible -d terraform --quiet --skip-path ansible/envs

@@ -13,6 +13,9 @@ run = "cd terraform/vpn && terraform init -backend-config=../backend.conf"
 [tasks.tf-infra-init]
 run = "cd terraform/infra && terraform init -backend-config=../backend.conf"
 
+[tasks.tf-backup-init]
+run = "cd terraform/backup && terraform init -backend-config=../backend.conf"
+
 [tasks.tf-lint]
 run = "cd terraform/vpn && tflint"
 
@@ -38,7 +41,7 @@ run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i
 depends = "ansible-inventory"
 
 [tasks.ansible-consul]
-run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_consul.yml"
+run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_consul.yml pb_consul.yml"
 depends = "ansible-all"
 
 [tasks.ansible-all-consul-services]

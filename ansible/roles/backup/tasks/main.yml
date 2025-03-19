@@ -1,0 +1,79 @@
+---
+# tasks file for roles/backup
+- name: Ensure required variables are defined
+  ansible.builtin.assert:
+    that:
+      - backup_s3_uri is defined and backup_s3_uri | length > 0
+      - backup_s3_key is defined and backup_s3_key | length > 0
+      - backup_restic_secret_password is defined and backup_restic_secret_password | length > 0
+      - backup_s3_secret_key is defined and backup_s3_secret_key | length > 0
+    fail_msg: "Required variables are missing!"
+
+- name: Install cron and restic
+  ansible.builtin.apt:
+    name: cron,restic
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Create directories for restic backup
+  ansible.builtin.file:
+    path: "{{ item.dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+    - { dir: "/root/.config/restic/", mode: "0750" }
+    - { dir: "/opt/scripts/backups", mode: "0750" }
+    - { dir: "/var/log/backups/", mode: "0755" }
+    - { dir: "{{ backup_metrics_dir }}", mode: "0755" }
+
+- name: Add restic configuration file
+  ansible.builtin.copy:
+    content: |
+      export AWS_DEFAULT_REGION="{{ backup_s3_aws_region }}"
+      export RESTIC_REPOSITORY="{{ backup_s3_uri }}"
+      export AWS_ACCESS_KEY_ID="{{ backup_s3_key }}"
+      export AWS_SECRET_ACCESS_KEY="{{ backup_s3_secret_key }}"
+      export RESTIC_PASSWORD="{{ backup_restic_secret_password }}"
+    dest: /root/.config/restic/restic_{{ backup_app }}.creds
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Install the consul backup script
+  ansible.builtin.template:
+    src: backup_{{ backup_app }}.sh.j2
+    dest: /opt/scripts/backups/backup_{{ backup_app }}.sh
+    owner: root
+    group: root
+    mode: 0750
+
+- name: Add a cron for backups
+  ansible.builtin.template:
+    src: backup_{{ backup_app }}.j2
+    dest: /etc/cron.d/backup_{{ backup_app }}
+    owner: root
+    group: root
+    mode: 0750
+
+- name: Check if restic already init
+  ansible.builtin.shell: |
+    source /root/.config/restic/restic_{{ backup_app }}.creds
+    restic snapshots
+  args:
+    executable: /bin/bash
+  register: __restic_init
+  changed_when: false
+  failed_when: __restic_init.rc != 0 and "Is there a repository" not in __restic_init.stderr
+
+- name: Init Restic if needed
+  ansible.builtin.shell: |
+    source /root/.config/restic/restic_{{ backup_app }}.creds
+    restic init
+  args:
+    executable: /bin/bash
+  when: __restic_init.rc != 0
+  changed_when: true
+  failed_when: "'Fatal' in restic_init.stderr"

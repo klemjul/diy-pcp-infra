@@ -1,0 +1,47 @@
+---
+# tasks file for roles/metrics_task_times
+
+- name: Install cron
+  ansible.builtin.apt:
+    name: cron
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Check if directories exist
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: dir_status
+  loop:
+    - "{{ metrics_task_times_node_exporter_dir_data }}"
+    - "{{ metrics_task_times_touch_metrics_dir }}"
+
+- name: Fail if any directory does not exist
+  ansible.builtin.fail:
+    msg: "Directory {{ item.item }} does not exist!"
+  when: not item.stat.exists
+  loop: "{{ dir_status.results }}"
+
+- name: Install /opt/scripts
+  ansible.builtin.file:
+    path: /opt/scripts
+    state: directory
+    owner: root
+    group: root
+    mode: 0750
+
+- name: Deploy check script
+  ansible.builtin.template:
+    src: metrics_task_times.sh.j2
+    dest: /opt/scripts/metrics_task_times.sh
+    owner: root
+    group: root
+    mode: 0750
+
+- name: Add a cron for custom metrics
+  ansible.builtin.template:
+    src: metrics_task_times.j2
+    dest: /etc/cron.d/metrics_task_times
+    owner: root
+    group: root
+    mode: 0750

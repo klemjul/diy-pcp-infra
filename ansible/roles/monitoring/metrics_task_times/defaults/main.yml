@@ -1,0 +1,5 @@
+---
+# defaults file for roles/metrics_task_times
+metrics_task_times_scheduling: "*/10 * * * *"
+metrics_task_times_node_exporter_dir_data: /var/lib/node_exporter # custom folder used by node_exporter to read custom metrics
+metrics_task_times_touch_metrics_dir: "/var/lib/metrics_task_times" # folder that contain touch files with dates

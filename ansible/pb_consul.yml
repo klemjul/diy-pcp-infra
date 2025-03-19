@@ -1,5 +1,10 @@
 - name: Consul_master
   hosts: meta-app_consul
+  roles:
+    - volumes
+    - consul
+    - backup
+    - monitoring/metrics_task_times
   become: true
   vars:
     consul_master: true
@@ -10,11 +15,9 @@
           path: "{{ consul_dir_master_data }}",
           owner: "consul",
         }
-  roles:
-    - volumes
-    - consul
+
 - name: Consul agent
   hosts: all,!meta-app_consul
-  become: true
   roles:
     - consul
+  become: true
