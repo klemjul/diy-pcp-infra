@@ -5,4 +5,5 @@ grafana_admin_user: "grafana_admin_user"
 grafana_admin_password: "grafana_admin_password"
 grafana_prometheus_address: "grafana_prometheus_address:8428"
 grafana_dashboards:
-  - { label: "label", json_url: "https://json_url" }
+  - { label: "label", json_url: "https://json_url", mode: "web" }
+  - { label: "label", json: "label.json", mode: "local" }

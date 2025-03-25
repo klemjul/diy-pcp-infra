@@ -1,9 +1,18 @@
-- name: "Download dashboard - {{ item.label }}"
+- name: "Install dashboard (web) - {{ item.label }}"
   ansible.builtin.get_url:
     url: "{{ item.json_url }}"
     dest: "/var/lib/grafana/{{ item.label }}.json"
     mode: "0755"
   notify: Restart grafana
+  when: item.mode == "web"
+
+- name: "Install dashboard (local) - {{ item.label }}"
+  ansible.builtin.copy:
+    src: "dashboard_{{ item.json }}"
+    dest: "/var/lib/grafana/{{ item.label }}.json"
+    mode: "0755"
+  notify: Restart grafana
+  when: item.mode == "local"
 
 - name: Change datasource in dashboards
   ansible.builtin.replace:

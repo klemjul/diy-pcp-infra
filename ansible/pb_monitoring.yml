@@ -20,7 +20,9 @@
       - {
           label: "node-exporter",
           json_url: "https://raw.githubusercontent.com/rfrail3/grafana-dashboards/master/prometheus/node-exporter-full.json",
+          mode: "web",
         }
+      - { label: "backups", json: "backups.json", mode: "local" }
     volumes_disks:
       - { disk: "/dev/sdb", path: "{{ vmtools_dir_disk_data }}" }
     consul_services_list:
