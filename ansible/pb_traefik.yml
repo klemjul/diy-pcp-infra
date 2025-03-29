@@ -1,0 +1,23 @@
+- name: Install traefik proxy
+  become: yes
+  hosts: meta-app_traefik
+  roles:
+    - traefik
+    - consul_services
+  vars:
+    traefik_consul_catalog: "consul.service.sandbox.consul:8500"
+    consul_services_list:
+      - {
+          name: "traefik_dashboard",
+          type: "http",
+          target: "http://127.0.0.1:8080/dashboard",
+          interval: "10s",
+          port: 8080,
+        }
+      - {
+          name: "traefik_metrics",
+          type: "http",
+          target: "http://127.0.0.1:9200/metrics",
+          interval: "10s",
+          port: 9200,
+        }

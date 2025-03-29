@@ -23,6 +23,11 @@
           mode: "web",
         }
       - { label: "backups", json: "backups.json", mode: "local" }
+      - {
+          label: "traefik",
+          json_url: "https://raw.githubusercontent.com/traefik/traefik/master/contrib/grafana/traefik.json",
+          mode: "web",
+        }
     volumes_disks:
       - { disk: "/dev/sdb", path: "{{ vmtools_dir_disk_data }}" }
     consul_services_list:
@@ -39,6 +44,15 @@
           check_target: "http://127.0.0.1:8428",
           interval: "20s",
           port: 8428,
+          tags:
+            [
+              "traefik.enable=true",
+              "traefik.http.routers.router-vmetrics.entrypoints=http,https",
+              "traefik.http.routers.router-vmetrics.rule=Host(`{{ vmetrics_domain }}`)",
+              "traefik.http.routers.router-vmetrics.service=vmetrics",
+              "traefik.http.routers.router-vmetrics.middlewares=auth@file,to_https@file,secure_headers@file",
+              "traefik.http.routers.router-vmetrics.tls.certresolver=certs_gen",
+            ],
         }
       - {
           name: "vmalert",
@@ -67,4 +81,13 @@
           target: "http://127.0.0.1:3000",
           interval: "10s",
           port: 3000,
+          tags:
+            [
+              "traefik.enable=true",
+              "traefik.http.routers.router-grafana.entrypoints=http,https",
+              "traefik.http.routers.router-grafana.rule=Host(`{{ grafana_domain }}`)",
+              "traefik.http.routers.router-grafana.service=grafana",
+              "traefik.http.routers.router-grafana.middlewares=auth@file,to_https@file,secure_headers@file",
+              "traefik.http.routers.router-grafana.tls.certresolver=certs_gen",
+            ],
         }

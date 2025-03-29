@@ -40,3 +40,7 @@ variable "instance_default_user" {
   type    = string
   default = "clouduser"
 }
+
+variable "instance_traefik_public_fixed_ip" {
+  type = string
+}

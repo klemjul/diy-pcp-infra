@@ -15,3 +15,17 @@ scrape_configs:
     replacement:   '${1}:9100'
   - source_labels: [__meta_consul_node]
     target_label: instance
+
+- job_name: traefik_metrics
+  consul_sd_configs:
+  - server: 'consul.service.sandbox.consul:8500'
+    services:
+    - 'traefik_metrics'
+  relabel_configs:
+  - source_labels: ['__meta_consul_address']
+    regex:         '(.*)'
+    target_label:  '__address__'
+    replacement:   '${1}:9200'
+  - source_labels: [__meta_consul_node]
+    target_label: instance
+

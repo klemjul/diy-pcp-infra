@@ -1,0 +1,14 @@
+---
+# defaults file for roles/traefik
+traefik_version: 3.3.4
+traefik_user: traefik
+traefik_group: "{{ traefik_user }}"
+traefik_dir_conf: /etc/traefik
+traefik_dir_bin: /usr/local/bin
+traefik_dir_log: /var/log/traefik
+traefik_tls_resolver: certs_gen
+# email used for cert renewal, must be defined in secret variables
+traefik_tls_mail:
+# htpasswd for a basic auth middleware, must be defined in secret variables
+traefik_htpasswd:
+traefik_consul_datacenter: "sandbox"
