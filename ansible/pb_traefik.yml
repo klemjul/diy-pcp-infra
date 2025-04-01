@@ -4,6 +4,7 @@
   roles:
     - traefik
     - consul_services
+    - logrotate
   vars:
     traefik_consul_catalog: "consul.service.sandbox.consul:8500"
     consul_services_list:
@@ -21,3 +22,7 @@
           interval: "10s",
           port: 9200,
         }
+    logrotate_log_files:
+      - name: traefik
+        path: "/var/log/traefik/*.log"
+        postrotate: "kill -USR1 `pgrep traefik`"
