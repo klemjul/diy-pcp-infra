@@ -56,6 +56,10 @@ depends = "ansible-all-consul-services"
 run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/domains.yml  pb_monitoring.yml"
 depends = "ansible-all-consul-services"
 
+[tasks.ansible-logging]
+run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_logging.yml"
+depends = "ansible-monitoring"
+
 [tasks.ansible-all-hardening]
 run = "cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_hardening.yml"
 depends = "ansible-all"

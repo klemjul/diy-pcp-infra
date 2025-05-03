@@ -1,0 +1,33 @@
+---
+# tasks file for roles/loki
+
+- name: Install loki
+  ansible.builtin.apt:
+    deb: "https://github.com/grafana/loki/releases/download/v{{ loki_version }}/loki_{{ loki_version }}_amd64.deb"
+
+- name: Create data dir for loki
+  ansible.builtin.file:
+    state: directory
+    path: "{{ loki_dir_data }}"
+    owner: loki
+    group: loki
+    mode: 0750
+    recurse: yes
+
+- name: Loki install configuration
+  ansible.builtin.template:
+    src: config.yml.j2
+    dest: /etc/loki/config.yml
+    mode: 0750
+    owner: loki
+    group: loki
+  notify: Restart loki
+
+- name: Start loki
+  ansible.builtin.systemd:
+    name: loki
+    state: started
+    enabled: yes
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

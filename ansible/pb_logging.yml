@@ -1,0 +1,18 @@
+- name: Logging
+  become: yes
+  hosts: meta-app_loki
+  roles:
+    - volumes
+    - logging/loki
+    - consul_services
+  vars:
+    volumes_disks:
+      - { disk: "/dev/sdb", path: "/data", owner: "loki" }
+    consul_services_list:
+      - {
+          name: "loki",
+          type: "http",
+          target: "http://127.0.0.1:3100/metrics",
+          interval: "10s",
+          port: 3100,
+        }

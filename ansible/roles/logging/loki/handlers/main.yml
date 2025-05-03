@@ -1,0 +1,8 @@
+---
+# handlers file for roles/loki
+
+- name: Restart loki
+  ansible.builtin.systemd:
+    name: loki
+    state: restarted
+    enabled: yes
