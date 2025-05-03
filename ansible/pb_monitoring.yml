@@ -37,11 +37,8 @@
         }
       - { label: "backups", json: "backups.json", mode: "local" }
       - { label: "errorlog", json: "errorlog.json", mode: "local" }
-      - {
-          label: "traefik",
-          json_url: "https://raw.githubusercontent.com/traefik/traefik/master/contrib/grafana/traefik.json",
-          mode: "web",
-        }
+      - { label: "traefik", json: "traefik.json", mode: "local" }
+
     volumes_disks:
       - { disk: "/dev/sdb", path: "{{ vmtools_dir_disk_data }}" }
     consul_services_list:
