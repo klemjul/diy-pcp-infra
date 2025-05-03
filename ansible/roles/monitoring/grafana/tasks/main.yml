@@ -34,15 +34,17 @@
         after: "admin_password = {{ grafana_admin_password }}",
       }
 
-- name: Add victoriametrics datasource
+- name: Add datasources
   community.grafana.grafana_datasource:
-    name: "VictoriaMetrics"
+    name: "{{ item.name }}"
+    uid: "{{ item.uid }}"
     grafana_url: "http://127.0.0.1:3000"
     grafana_user: "{{ grafana_admin_user }}"
     grafana_password: "{{ grafana_admin_password }}"
     org_id: "1"
-    ds_type: "prometheus"
-    ds_url: "http://{{ grafana_prometheus_address }}"
+    ds_type: "{{ item.type }}"
+    ds_url: "http://{{ item.address }}"
+  loop: "{{ grafana_datasources }}"
   changed_when: false
   ignore_errors: true # noqa: ignore-errors
 

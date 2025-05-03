@@ -1,0 +1,6 @@
+vector_dir_data: "/var/lib/vector"
+vector_dir_config: "/etc/vector"
+vector_version: 0.46.1
+vector_binary_path: "/usr/local/bin/"
+vector_loki_endpoint: loki.service.consul:3100
+vector_specifics_list: []

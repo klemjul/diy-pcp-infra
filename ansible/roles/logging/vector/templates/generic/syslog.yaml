@@ -1,0 +1,19 @@
+data_dir: "/var/lib/vector"
+
+sources:
+  syslog:
+    type: journald
+
+sinks:
+  loki_syslog:
+    type: loki
+    labels:
+      instance: "{{ ansible_hostname }}"
+      type: "syslog"
+    inputs:
+      - syslog
+    endpoint: http://{{ vector_loki_endpoint }}
+    encoding:
+      codec: "json"
+    healthcheck:
+      enabled: false

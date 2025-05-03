@@ -1,0 +1,11 @@
+- name: Restart_vector
+  ansible.builtin.service:
+    name: vector
+    state: restarted
+    enabled: yes
+    daemon-reload: yes
+
+- name: Reload_vector
+  ansible.builtin.service:
+    name: vector
+    state: reloaded

@@ -5,7 +5,9 @@
     - traefik
     - consul_services
     - logrotate
+    - logging/vector
   vars:
+    vector_specifics_list: ["traefik"]
     traefik_consul_catalog: "consul.service.sandbox.consul:8500"
     consul_services_list:
       - {

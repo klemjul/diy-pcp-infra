@@ -7,3 +7,16 @@ grafana_prometheus_address: "grafana_prometheus_address:8428"
 grafana_dashboards:
   - { label: "label", json_url: "https://json_url", mode: "web" }
   - { label: "label", json: "label.json", mode: "local" }
+grafana_datasources:
+  - {
+      name: "VictoriaMetrics",
+      type: "prometheus",
+      address: "vmetrics.service.consul:8428",
+      uid: "vmetrics",
+    }
+  - {
+      name: "Loki",
+      type: "loki",
+      address: "loki.service.consul:3100",
+      uid: "loki",
+    }

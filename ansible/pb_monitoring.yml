@@ -16,6 +16,19 @@
     vmtools_vmalert_grafana: grafana.service.sandbox.consul
     karma_alertmanager_uri: "http://alertmanager.service.sandbox.consul:9093"
     grafana_prometheus_address: "vmetrics.service.sandbox.consul:8428"
+    grafana_datasources:
+      - {
+          name: "VictoriaMetrics",
+          type: "prometheus",
+          address: "vmetrics.service.consul:8428",
+          uid: "vmetrics",
+        }
+      - {
+          name: "Loki",
+          type: "loki",
+          address: "loki.service.consul:3100",
+          uid: "loki",
+        }
     grafana_dashboards:
       - {
           label: "node-exporter",
@@ -23,6 +36,7 @@
           mode: "web",
         }
       - { label: "backups", json: "backups.json", mode: "local" }
+      - { label: "errorlog", json: "errorlog.json", mode: "local" }
       - {
           label: "traefik",
           json_url: "https://raw.githubusercontent.com/traefik/traefik/master/contrib/grafana/traefik.json",

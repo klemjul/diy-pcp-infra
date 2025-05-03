@@ -1,0 +1,53 @@
+data_dir: "/var/lib/vector"
+
+sources:
+  traefik:
+    type: file
+    ignore_older_secs: 600
+    include:
+      - "/var/log/traefik/traefik.log"
+    read_from: "beginning"
+  traefik_access:
+    type: file
+    ignore_older_secs: 600
+    include:
+      - "/var/log/traefik/access-traefik.log"
+    read_from: "beginning"
+transforms:
+  tr_traefik_logs:
+    type: remap
+    inputs:
+      - traefik
+    source: |-
+      . = parse_json!(.message)
+  tr_traefik_access_logs:
+    type: remap
+    inputs:
+      - traefik_access
+    source: |-
+      . = parse_json!(.message)
+sinks:
+  loki_traefik_logs:
+    type: loki
+    labels:
+      instance: "{{ ansible_hostname }}"
+      type: "traefik_logs"
+    inputs:
+      - tr_traefik_logs
+    endpoint: http://{{ vector_loki_endpoint }}
+    encoding:
+      codec: "json"
+    healthcheck:
+      enabled: false
+  loki_traefik_access_logs:
+    type: loki
+    labels:
+      instance: "{{ ansible_hostname }}"
+      type: "traefik_access_logs"
+    inputs:
+      - tr_traefik_access_logs
+    endpoint: http://{{ vector_loki_endpoint }}
+    encoding:
+      codec: "json"
+    healthcheck:
+      enabled: false

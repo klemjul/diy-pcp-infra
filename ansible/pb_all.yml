@@ -10,3 +10,4 @@
     - base
     - dns_common
     - monitoring/node_exporter
+    - logging/vector
