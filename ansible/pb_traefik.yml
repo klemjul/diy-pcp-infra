@@ -12,15 +12,15 @@
     consul_services_list:
       - {
           name: "traefik_dashboard",
-          type: "http",
-          target: "http://127.0.0.1:8080/dashboard",
+          type: "tcp",
+          check_target: "127.0.0.1:8080",
           interval: "10s",
           port: 8080,
         }
       - {
           name: "traefik_metrics",
           type: "http",
-          target: "http://127.0.0.1:9200/metrics",
+          check_target: "http://127.0.0.1:9200/metrics",
           interval: "10s",
           port: 9200,
         }

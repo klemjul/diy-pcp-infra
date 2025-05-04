@@ -9,6 +9,7 @@
     - monitoring/karma
     - monitoring/grafana
     - consul_services
+    - monitoring/consul_exporter
   vars:
     vmtools_dir_disk_data: "/data"
     vmetrics_dir_disk_data: "/data"
@@ -38,6 +39,7 @@
       - { label: "backups", json: "backups.json", mode: "local" }
       - { label: "errorlog", json: "errorlog.json", mode: "local" }
       - { label: "traefik", json: "traefik.json", mode: "local" }
+      - { label: "consul", json: "consul.json", mode: "local" }
 
     volumes_disks:
       - { disk: "/dev/sdb", path: "{{ vmtools_dir_disk_data }}" }
@@ -82,14 +84,14 @@
       - {
           name: "karma",
           type: "http",
-          target: "http://127.0.0.1:8080",
+          check_target: "http://127.0.0.1:8080",
           interval: "10s",
           port: 8080,
         }
       - {
           name: "grafana",
           type: "http",
-          target: "http://127.0.0.1:3000",
+          check_target: "http://127.0.0.1:3000",
           interval: "10s",
           port: 3000,
           tags:
@@ -101,4 +103,11 @@
               "traefik.http.routers.router-grafana.middlewares=auth@file,to_https@file,secure_headers@file",
               "traefik.http.routers.router-grafana.tls.certresolver=certs_gen",
             ],
+        }
+      - {
+          name: "consul_exporter",
+          type: "http",
+          check_target: "http://127.0.0.1:9107",
+          interval: "20s",
+          port: 9107,
         }

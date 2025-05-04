@@ -21,5 +21,9 @@
   "rejoin_after_leave": true,
   "retry_join": [
     "{{ groups[consul_group] | map('extract', hostvars, ['ansible_host']) | join('\",\"') }}"
-  ]
+  ],
+  "telemetry": {
+    "prometheus_retention_time": "48h",
+    "disable_hostname": true
+  }
 }

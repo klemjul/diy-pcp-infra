@@ -12,7 +12,7 @@
       - {
           name: "loki",
           type: "http",
-          target: "http://127.0.0.1:3100/metrics",
+          check_target: "http://127.0.0.1:3100/metrics",
           interval: "10s",
           port: 3100,
         }
