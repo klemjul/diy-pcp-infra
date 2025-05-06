@@ -4,7 +4,7 @@
   roles:
     - traefik
     - consul_services
-    - logrotate
+    - logging/logrotate
     - logging/vector
   vars:
     vector_specifics_list: ["traefik"]
