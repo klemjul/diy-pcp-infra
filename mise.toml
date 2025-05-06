@@ -17,10 +17,32 @@ run = "cd terraform/infra && terraform init -backend-config=../backend.conf"
 run = "cd terraform/backup && terraform init -backend-config=../backend.conf"
 
 [tasks.tf-lint]
-run = "cd terraform/vpn && tflint"
+run = """
+echo 'Running tflint on terraform/vpn...'
+(cd terraform/vpn && tflint)
+echo 'Running tflint on terraform/infra...'
+(cd terraform/infra && tflint)
+echo 'Running tflint on terraform/backup...'
+(cd terraform/backup && tflint)
+echo 'Running tflint on terraform/modules/openstack_instance...'
+(cd terraform/modules/openstack_instance && tflint)
+echo 'Running tflint on terraform/modules/openstack_network...'
+(cd terraform/modules/openstack_network && tflint)
+"""
 
 [tasks.tf-fmt]
-run = "cd terraform/vpn && terraform fmt"
+run = """
+echo 'Running terraform fmt on terraform/vpn...'
+(cd terraform/vpn && terraform fmt)
+echo 'Running terraform fmt on terraform/infra...'
+(cd terraform/infra && terraform fmt)
+echo 'Running terraform fmt on terraform/backup...'
+(cd terraform/backup && terraform fmt)
+echo 'Running terraform fmt on terraform/modules/openstack_instance...'
+(cd terraform/modules/openstack_instance && terraform fmt)
+echo 'Running terraform fmt on terraform/modules/openstack_network...'
+(cd terraform/modules/openstack_network && terraform fmt)
+"""
 
 [tasks.ansible-lint]
 run = "cd ansible && ansible-lint"

@@ -26,21 +26,6 @@ variable "instance_image_id" {
   type = string
 }
 
-variable "instance_flavor_name" {
-  type    = string
-  default = "a1-ram2-disk20-perf1"
-}
-
-variable "instance_default_user_password_hash" {
-  type    = string
-  default = null
-}
-
-variable "instance_default_user" {
-  type    = string
-  default = "clouduser"
-}
-
 variable "instance_traefik_public_fixed_ip" {
   type = string
 }

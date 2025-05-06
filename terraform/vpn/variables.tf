@@ -32,11 +32,6 @@ variable "instance_image_id" {
   description = "Debian 12 bookworm"
 }
 
-variable "instance_flavor_name" {
-  type    = string
-  default = "a1-ram2-disk20-perf1"
-}
-
 variable "openvpn_client_user_list" {
   type    = list(any)
   default = ["user1"]

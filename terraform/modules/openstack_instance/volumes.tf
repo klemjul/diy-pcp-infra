@@ -5,7 +5,7 @@ locals {
 locals {
   instance_volume_map = merge([
 
-    for idxi, instance in openstack_compute_instance_v2.instance.* :
+    for idxi, instance in openstack_compute_instance_v2.instance :
     {
       for idxv in range(var.instance_volumes_count) :
       "${instance.name}-volume-${idxv}" => {
