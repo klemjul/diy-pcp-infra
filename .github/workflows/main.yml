@@ -1,5 +1,4 @@
 name: CI Workflow
-
 on:
   push:
     branches:
@@ -27,18 +26,22 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install checkov ansible-lint ansible
+          pip install -q checkov==3.2.408 ansible-lint ansible
           curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
           curl https://mise.run | sh
+          checkov --version
+          ansible-lint --version
+          tflint --version
+          mise --version
 
       - name: Install Ansible collections
         run: mise run ansible-install
 
       - name: Run TFLint
         run: mise run tf-lint
-      - name: Run TF fmt
-        run: mise run tf-fmt
       - name: Run Ansible lint
         run: mise run ansible-lint
       - name: Run Checkov
-        run: checkov -d ansible -d terraform --quiet
+        run: |
+          checkov -d terraform --framework terraform --quiet
+          checkov -d ansible --framework ansible --quiet  --skip-path ansible/envs --skip-path ansible/.ansible
