@@ -37,10 +37,26 @@ jobs:
       - name: Install Ansible collections
         run: mise run ansible-install
 
+      - name: Init tf modules
+        run: |
+          (cd terraform/backup && terraform init -backend=false)
+          (cd terraform/infra && terraform init -backend=false)
+          (cd terraform/vpn && terraform init -backend=false)
+          (cd terraform/modules/openstack_instance && terraform init -backend=false)
+          (cd terraform/modules/openstack_network && terraform init -backend=false)
+
       - name: Run TFLint
         run: mise run tf-lint
+
+      - name: Run Terraform validate
+        run: mise run tf-validate
+
+      - name: Run Terraform tests
+        run: mise run tf-test
+
       - name: Run Ansible lint
         run: mise run ansible-lint
+        
       - name: Run Checkov
         run: |
           checkov -d terraform --framework terraform --quiet
