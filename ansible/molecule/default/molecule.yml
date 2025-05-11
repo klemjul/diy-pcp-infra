@@ -1,0 +1,14 @@
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: server-test
+    hostname: server-test
+    image: debian:bookworm
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: "../../roles"
+verifier:
+  name: testinfra

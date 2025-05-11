@@ -9,6 +9,9 @@ This repository contains the code I use to follow the excellent Xavki learning s
 - [openstack cli](https://github.com/openstack/python-openstackclient) CLI client to interact with OpenStack
 - ansible collections: install using `make ansible-install`
 - Python > 3.11 required for Ansible and OpenStack CLI
+- [molecule](https://github.com/ansible/molecule) for testing ansible roles
+- [molecule pluggin docker](https://github.com/ansible-community/molecule-plugins) docker driver for molecule
+- [testinfra](https://github.com/pytest-dev/pytest-testinfra) for testing using molecule with python
 
 ### (optional) Dependencies
 

@@ -37,6 +37,9 @@ tf-validate:
 ansible-lint:
 	cd ansible && ansible-lint
 
+ansible-test:
+	cd ansible && molecule test
+
 ansible-install:
 	cd ansible && \
 	ansible-galaxy collection install openstack.cloud && \

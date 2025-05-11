@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +26,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install -q checkov==3.2.408 ansible-lint ansible
+          pip install -q checkov==3.2.408 ansible-lint ansible pytest-testinfra molecule "molecule-plugins[docker]"
           curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
           checkov --version
           ansible-lint --version
@@ -54,7 +54,10 @@ jobs:
 
       - name: Run Ansible lint
         run: make ansible-lint
-        
+
+      - name: Run Molecule tests
+        run: make ansible-test
+
       - name: Run Checkov
         run: |
           checkov -d terraform --framework terraform --quiet

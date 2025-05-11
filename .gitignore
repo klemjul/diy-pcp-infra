@@ -19,3 +19,4 @@ data
 **/.vagrant
 **/*.ansible
 ansible/envs
+__pycache__/
