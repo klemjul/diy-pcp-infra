@@ -28,14 +28,12 @@ jobs:
         run: |
           pip install -q checkov==3.2.408 ansible-lint ansible
           curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-          curl https://mise.run | sh
           checkov --version
           ansible-lint --version
           tflint --version
-          mise --version
 
       - name: Install Ansible collections
-        run: mise run ansible-install
+        run: make ansible-install
 
       - name: Init tf modules
         run: |
@@ -46,16 +44,16 @@ jobs:
           (cd terraform/modules/openstack_network && terraform init -backend=false)
 
       - name: Run TFLint
-        run: mise run tf-lint
+        run: make tf-lint
 
       - name: Run Terraform validate
-        run: mise run tf-validate
+        run: make tf-validate
 
       - name: Run Terraform tests
-        run: mise run tf-test
+        run: make tf-test
 
       - name: Run Ansible lint
-        run: mise run ansible-lint
+        run: make ansible-lint
         
       - name: Run Checkov
         run: |

@@ -7,14 +7,14 @@ This repository contains the code I use to follow the excellent Xavki learning s
 - [terraform](https://github.com/hashicorp/terraform) for provisioning and managing cloud resources
 - [ansible](https://github.com/ansible/ansible) for instance configurations
 - [openstack cli](https://github.com/openstack/python-openstackclient) CLI client to interact with OpenStack
-- ansible collections: install using `mise run ansible-install`
+- ansible collections: install using `make ansible-install`
 - Python > 3.11 required for Ansible and OpenStack CLI
 
 ### (optional) Dependencies
 
 This section covers dependencies related to developer experience that are not required to deploy the infrastructure.
 
-- [mise](https://github.com/jdx/mise) manages stuff like runtimes, project tasks easily, acts as a replacement for Makefile here [./mise.toml](./mise.toml)
+- GNU make: used to manage project tasks (with .PHONY)
 - [ansible-lint](https://github.com/ansible/ansible-lint) Ansible linter
 - [tflint](https://github.com/terraform-linters/tflint) Terraform linter
 - [pre-commit](https://github.com/pre-commit/pre-commit) pre-commit hooks, used to trigger Checkov and Gitleaks
@@ -54,7 +54,7 @@ Infrastructure can be accessed from the internet from the OpenVPN instance with 
 ## Provisioning with Terraform
 
 Infrastructure provisioning is done using Terraform with the OpenStack provider. It can be deployed on an OpenStack-compatible infrastructure.
-First prepare your terraform backend and initialize backend for the different infrastructure units and modules using `mise run tf-init`, backend sample config is available [./backend.conf.sample](./backend.conf.sample).
+First prepare your terraform backend and initialize backend for the different infrastructure units and modules using `make tf-init`, backend sample config is available [./backend.conf.sample](./backend.conf.sample).
 
 Three different infrastructure units can be deployed:
 
@@ -80,7 +80,9 @@ You can use the `terraform` CLI in the `./terraform/infra` folder. Ensure you ha
 
 Configuration of the instances provisioned by Terraform is done using Ansible playbooks. Find below a simple description of all the playbooks.
 
-The simplest way to retrieve Ansible hosts for the infrastructure deployment is to use the [OpenStack Ansible dynamic inventory](https://docs.ansible.com/ansible/latest/collections/openstack/cloud/openstack_inventory.html) (`mise run ansible-inventory`).
+The simplest way to retrieve Ansible hosts for the infrastructure deployment is to use the [OpenStack Ansible dynamic inventory](https://docs.ansible.com/ansible/latest/collections/openstack/cloud/openstack_inventory.html) (`make ansible-inventory`).
+
+Extra variables (`-e`) are configured using files in the git-ignored `ansible/envs` folder. Sample files are available in `ansible/envs_sample` you can copy them to create your own before running Ansible playbooks.
 
 | Playbook                                                             | Description                                                                         |
 | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
