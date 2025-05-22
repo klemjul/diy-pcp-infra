@@ -33,7 +33,7 @@ Infrastructure can be accessed from the internet from the OpenVPN instance with 
 ## Provisioning with Terraform
 
 Infrastructure provisioning is done using Terraform with the OpenStack provider. It can be deployed on an OpenStack-compatible infrastructure.
-First prepare your terraform backend and initialize backend for the different infrastructure units and modules using `make tf-init`, backend sample config is available [./backend.conf.sample](./backend.conf.sample).
+First prepare your terraform backend and initialize backend for the different infrastructure units and modules using `make tf-init`, backend sample config is available [./terraform/backend.conf.sample](./terraform/backend.conf.sample).
 
 Three different infrastructure units can be deployed:
 
@@ -61,7 +61,7 @@ Configuration of the instances provisioned by Terraform is done using Ansible pl
 
 The simplest way to retrieve Ansible hosts for the infrastructure deployment is to use the [OpenStack Ansible dynamic inventory](https://docs.ansible.com/ansible/latest/collections/openstack/cloud/openstack_inventory.html) (`make ansible-inventory`).
 
-Extra variables (`-e`) are configured using files in the git-ignored `ansible/envs` folder. Sample files are available in `ansible/envs_sample` you can copy them to create your own before running Ansible playbooks.
+Extra variables (`-e`) are configured using files in the git-ignored `ansible/envs` folder. Sample files are available in [./ansible/envs_sample](./ansible/envs_sample) you can copy them to create your own before running Ansible playbooks.
 
 | Playbook                                                             | Description                                                                         |
 | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
