@@ -76,4 +76,4 @@
     executable: /bin/bash
   when: __restic_init.rc != 0
   changed_when: true
-  failed_when: "'Fatal' in restic_init.stderr"
+  failed_when: "'Fatal' in __restic_init.stderr and 'Is there a repository' not in __restic_init.stderr"

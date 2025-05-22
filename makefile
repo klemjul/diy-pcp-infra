@@ -38,7 +38,7 @@ ansible-lint:
 	cd ansible && ansible-lint
 
 ansible-test:
-	cd ansible && molecule test
+	cd ansible && bash -c 'for s in molecule/*; do molecule test -s "$${s##*/}"; done'
 
 ansible-install:
 	cd ansible && \

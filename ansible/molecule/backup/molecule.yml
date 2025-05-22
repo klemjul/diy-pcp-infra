@@ -6,9 +6,8 @@ platforms:
   - name: server-test
     hostname: server-test
     image: debian:bookworm
+    privileged: true
 provisioner:
   name: ansible
-  env:
-    ANSIBLE_ROLES_PATH: "../../roles"
 verifier:
   name: testinfra

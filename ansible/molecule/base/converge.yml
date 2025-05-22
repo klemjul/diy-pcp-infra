@@ -1,4 +1,4 @@
 - name: Converge
   hosts: all
   roles:
-    - base
+    - ../../roles/base
