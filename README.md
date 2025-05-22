@@ -26,31 +26,7 @@ This section covers dependencies related to developer experience that are not re
 
 ## Infrastructure Overview
 
-```mermaid
-architecture-beta
-  group openstack(cloud)[OpenStack Cloud]
-  group public_subnet[public subnet] in openstack
-  group private_subnet[private subnet] in openstack
-  group consul_cluster[consul cluster] in private_subnet
-
-  service consul_leader(server)[consul leader] in consul_cluster
-  service consul_follower_1(server)[consul follower] in consul_cluster
-  service consul_follower_2(server)[consul follower] in consul_cluster
-
-  service openvpn(server)[openvpn] in private_subnet
-  service floating_ip(internet)[floating IP 1] in public_subnet
-
-  service traefik(server)[traefik] in private_subnet
-  service floating_ip_2(internet)[floating IP 2] in public_subnet
-
-  floating_ip:L -- R:openvpn
-  floating_ip_2:L -- R:traefik
-
-  service loki(server)[loki] in private_subnet
-  service monitoring(server)[monitoring] in private_subnet
-
-  service backup_s3_bucket(server)[s3 backups] in openstack
-```
+![docs/diy-pcp-infra.excalidraw.png](docs/diy-pcp-infra.excalidraw.png)
 
 Infrastructure can be accessed from the internet from the OpenVPN instance with an OpenVPN-compatible client or from Traefik using an exposed web service.
 
