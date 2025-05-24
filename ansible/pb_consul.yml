@@ -1,9 +1,9 @@
 - name: Consul_master
   hosts: meta-app_consul
   roles:
-    - volumes
-    - consul
-    - backup
+    - common/volumes
+    - consul/consul
+    - common/backup
     - monitoring/metrics_task_times
   become: true
   vars:
@@ -19,5 +19,5 @@
 - name: Consul agent
   hosts: all,!meta-app_consul
   roles:
-    - consul
+    - consul/consul
   become: true

@@ -2,4 +2,6 @@
   hosts: openvpn
   become: true
   roles:
-    - openvpn
+    - common/base
+    - common/dns_common
+    - openvpn/openvpn

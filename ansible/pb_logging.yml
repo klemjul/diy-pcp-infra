@@ -2,9 +2,9 @@
   become: yes
   hosts: meta-app_loki
   roles:
-    - volumes
+    - common/volumes
     - logging/loki
-    - consul_services
+    - consul/consul_services
   vars:
     volumes_disks:
       - { disk: "/dev/sdb", path: "/data", owner: "loki" }
