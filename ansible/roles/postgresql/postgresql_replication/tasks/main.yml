@@ -116,11 +116,11 @@
 
 - name: Include primary tasks
   ansible.builtin.include_tasks: primary.yml
-  when: ansible_hostname == postgresql_replication_primary
+  when: ansible_hostname == postgresql_replication_primary and ansible_hostname not in __test_repmgr.stdout
 
 - name: Include primary tasks
   ansible.builtin.include_tasks: secondary.yml
-  when: ansible_hostname != postgresql_replication_primary
+  when: ansible_hostname != postgresql_replication_primary and ansible_hostname not in __test_repmgr.stdout
 
 - name: Push pg_rsync.sh
   ansible.builtin.template:
@@ -129,3 +129,21 @@
     mode: "750"
     owner: root
     group: root
+
+- name: Add consul to sudoers for postgres user
+  ansible.builtin.lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: "^consul ALL = (postgres)"
+    line: "consul ALL = (postgres) NOPASSWD: /usr/bin/repmgr"
+    validate: "visudo -cf %s"
+  environment:
+    PATH: /usr/sbin:/usr/local/sbin:/sbin
+
+- name: Install check script
+  ansible.builtin.template:
+    src: failover_postgresql.sh.j2
+    dest: /opt/failover_postgresql.sh
+    owner: root
+    group: root
+    mode: 0755

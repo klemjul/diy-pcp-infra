@@ -16,8 +16,24 @@
   serial: 1
   roles:
     - postgresql/postgresql_replication
+    - consul/consul_services
   vars:
     postgresql_replication_data_dir: "/data/postgresql"
     postgresql_replication_group: "meta-app_postgresql"
     postgresql_replication_pattern: "diypcp-postgresql"
     postgresql_replication_primary: "diypcp-postgresql1"
+    consul_services_list:
+      - {
+          name: "postgresql_primary",
+          type: "args",
+          check_target: "/opt/failover_postgresql.sh",
+          interval: "10s",
+          port: 5432,
+        }
+      - {
+          name: "postgresql",
+          type: "tcp",
+          check_target: "127.0.0.1:5432",
+          interval: "10s",
+          port: 5432,
+        }

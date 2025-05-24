@@ -6,7 +6,11 @@
     {% endif %}{% if item.check_target is defined %},
     "checks": [{
       "id": "{{ item.name }}",
+      {% if item.type == "args"%}
+      "{{ item.type }}": ["{{ item.check_target }}"],
+      {% else %}
       "{{ item.type }}": "{{ item.check_target }}",
+      {% endif %}
       "interval": "{{ item.interval }}"
     }]
     {% endif %}
