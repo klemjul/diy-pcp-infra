@@ -1,0 +1,87 @@
+---
+# tasks file for roles/postgresql_simple
+
+- name: Install utils
+  ansible.builtin.apt:
+    name: gnupg
+    state: present
+
+- name: Add gpg key
+  ansible.builtin.apt_key:
+    url: "{{ postgresql_simple_repo_key }}"
+
+- name: Add repository
+  ansible.builtin.apt_repository:
+    repo: "deb {{ postgresql_simple_repo_url }} {{ ansible_distribution_release }}-pgdg main"
+    state: present
+
+- name: Install postgresql and contrib
+  ansible.builtin.apt:
+    name: "postgresql-{{ postgresql_simple_version_major }}={{ postgresql_simple_version_detail }},postgresql-contrib"
+    state: present
+    update_cache: true
+
+- name: Create directory for postgresql data
+  ansible.builtin.file:
+    path: "{{ postgresql_simple_data_dir }}"
+    state: directory
+    mode: 0750
+    owner: postgres
+    group: postgres
+  when: postgresql_simple_data_dir != ""
+
+- name: Update postgresql.conf change listen address
+  ansible.builtin.lineinfile:
+    path: "/etc/postgresql/{{ postgresql_simple_version_major }}/main/postgresql.conf"
+    regex: "^listen_addresses = "
+    insertafter: "^#listen_addresses "
+    line: "listen_addresses = '{{ postgresql_simple_listen }}'"
+    state: present
+  notify: RESTART_POSTGRESQL
+
+- name: Update postgresql.conf change listen address
+  ansible.builtin.lineinfile:
+    path: "/etc/postgresql/{{ postgresql_simple_version_major }}/main/postgresql.conf"
+    regex: "^data_directory = "
+    insertafter: "^#data_directory "
+    line: "data_directory = '{{ postgresql_simple_data_dir }}'"
+    state: present
+  when: postgresql_simple_data_dir != ""
+  notify: RECONFIGURE_DATA_DIR
+
+- name: Update postgres.conf to add include
+  ansible.builtin.lineinfile:
+    path: "/etc/postgresql/{{ postgresql_simple_version_major }}/main/postgresql.conf"
+    regex: "^include 'postgresql.custom.conf'"
+    insertafter: "^# Add settings for extensions here"
+    line: "include 'postgresql.custom.conf'"
+    state: present
+  notify: RESTART_POSTGRESQL
+
+- name: Add postgresql.custom.conf
+  ansible.builtin.template:
+    src: postgresql.custom.conf.j2
+    dest: /etc/postgresql/{{ postgresql_simple_version_major }}/main/postgresql.custom.conf
+    mode: 0640
+    owner: postgres
+    group: postgres
+  notify: RESTART_POSTGRESQL
+
+- name: Add pg_hba.conf
+  ansible.builtin.template:
+    src: pg_hba.conf.j2
+    dest: "/etc/postgresql/{{ postgresql_simple_version_major }}/main/pg_hba.conf"
+    mode: 0640
+    owner: postgres
+    group: postgres
+  notify: RELOAD_POSTGRESQL
+  when: postgresql_simple_pghba_enabled
+
+- name: Flush Handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Start postgresql
+  ansible.builtin.service:
+    name: postgresql
+    state: started
+    enabled: true

@@ -1,0 +1,10 @@
+- name: Install our postgresql cluster
+  become: yes
+  hosts: meta-app_postgresql
+  roles:
+    - common/volumes
+    - postgresql/postgresql_simple
+  vars:
+    volumes_disks:
+      - { disk: "/dev/sdb", path: "/data", owner: "root", mode: "0755" }
+    postgresql_simple_data_dir: /data/postgresql

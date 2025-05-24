@@ -67,5 +67,8 @@ ansible-monitoring: ansible-all-consul-services
 ansible-logging: ansible-monitoring
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_logging.yml
 
+ansible-postgresql: ansible-all-consul-services
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_postgresql_ha.yml
+
 ansible-all-hardening: ansible-all
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_hardening.yml
