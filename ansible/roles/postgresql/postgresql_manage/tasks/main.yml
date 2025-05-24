@@ -1,0 +1,5 @@
+---
+# tasks file for roles/postgresql_manage
+- name: Manage users & databases
+  ansible.builtin.include_tasks: manage_users_databases.yml
+  when: postgresql_manage
