@@ -1,0 +1,114 @@
+#!/bin/bash
+
+
+# Variables ############################################################
+
+export SYSTEMD_PAGER=''
+GREEN="\e[1;34m"
+DC="\e[0m"
+
+
+# Fonctions ###########################################################
+
+help_list() {
+  echo "Usage:
+
+  ${0##*/} [-h][--check][--resync]
+
+Options:
+
+  -h, --help
+    help display
+
+  -c, --check
+    cluster check
+
+  -r, --resync
+    resync an old failed primary
+  "
+}
+
+parse_options() {
+  case $@ in
+    -h|help)
+      help_list
+      exit
+     ;;
+    -c|--check)
+      option="1"
+      ;;
+    -r|--resync)
+      option="2"
+      ;;
+    *)
+      echo "Option not known: ${opt} - Run ${0##*/} -h ">&2
+      exit 1
+  esac
+}
+
+
+service_postgresql(){
+systemctl $1 postgresql
+}
+
+ec(){
+echo
+echo -e $GREEN$1$DC
+}
+
+# Exécution parseur ####################################################################
+
+parse_options $@
+
+
+# To make a check ###########################################################
+
+if [ "$option" == "1" ]; then
+
+echo
+ec "Check the cluster state"
+MASTER=`sudo -u postgres repmgr cluster show | awk -F '|' '$3 ~ "primary" {print $2}' | tr -d "\"" `
+SLAVE=`sudo -u postgres repmgr cluster show | awk -F '|' '$3 ~ "standby" {print $2}' | tr -d "\"" `
+echo "Master : "$MASTER
+echo "Slave : "$SLAVE
+
+ec "Synthèse master/slave"
+sudo -u postgres /usr/bin/repmgr cluster show
+
+fi
+
+# To make a sync ##########################################################
+
+if [ "$option" == "2" ]; then
+ec "Check postgresql service status..."
+service_postgresql status
+
+# Confirmation
+ec "Are you ready to erase this node ? y/n (to convert it as standby)"
+read response
+[[ "$response" != "y" ]] && exit
+
+ec "Ensure to stop postgresql service ..."
+service_postgresql stop
+
+ec "Clean PGDATA directory ..."
+rm -rf {{ postgresql_replication_data_dir }}/*
+
+ec "Sync with the primary..."
+{% for server in groups[postgresql_replication_group] | reject('equalto', inventory_hostname) | list %}
+sudo -u postgres /usr/bin/repmgr -h {{ server }} -U repmgr -d repmgr standby clone -c
+{% endfor %}
+
+ec "Start postgresql service..."
+service_postgresql start
+
+sudo -u postgres /usr/bin/repmgr standby register --force
+
+ec "Restart repmgrd..."
+service repmgrd restart
+
+# Bilan
+ec "Ended"
+sudo -u postgres /usr/bin/repmgr cluster show
+
+fi

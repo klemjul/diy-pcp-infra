@@ -1,0 +1,10 @@
+- name: Register primary
+  ansible.builtin.command: repmgr primary register --force
+  become: true
+  become_user: postgres
+  when: ansible_hostname == postgresql_replication_primary and ansible_hostname not in __test_repmgr.stdout
+  tags:
+    - skip_ansible_lint
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

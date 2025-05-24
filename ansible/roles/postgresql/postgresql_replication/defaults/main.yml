@@ -1,0 +1,10 @@
+---
+# defaults file for roles/postgresql_replication
+
+postgresql_replication_version_major: 16
+postgresql_replication_group: ""
+postgresql_replication_repmgr_password: ""
+postgresql_replication_pattern: "postgresql"
+postgresql_replication_data_dir: ""
+postgresql_replication_primary: ""
+#postgresql_replication_pghba_entries

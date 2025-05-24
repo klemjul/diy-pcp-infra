@@ -8,3 +8,16 @@
     volumes_disks:
       - { disk: "/dev/sdb", path: "/data", owner: "root", mode: "0755" }
     postgresql_simple_data_dir: /data/postgresql
+    postgresql_simple_pghba_enabled: false
+
+- name: Install our postgresql replication
+  become: yes
+  hosts: diypcp-postgresql1,diypcp-postgresql2
+  serial: 1
+  roles:
+    - postgresql/postgresql_replication
+  vars:
+    postgresql_replication_data_dir: "/data/postgresql"
+    postgresql_replication_group: "meta-app_postgresql"
+    postgresql_replication_pattern: "diypcp-postgresql"
+    postgresql_replication_primary: "diypcp-postgresql1"

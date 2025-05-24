@@ -1,0 +1,131 @@
+---
+# tasks file for rroles/postgresql_replication
+
+- name: Check if PostgreSQL is installed
+  ansible.builtin.stat:
+    path: /usr/bin/psql
+  register: __postgresql_installed
+
+- name: Check prerequites
+  ansible.builtin.assert:
+    that:
+      - __postgresql_installed.stat.exists == true
+    fail_msg: "Failed : you need to install ansible before. Add the role please."
+
+- name: Check variables
+  ansible.builtin.assert:
+    that:
+      - postgresql_replication_repmgr_password is defined
+      - postgresql_replication_repmgr_password | length > 0
+    fail_msg: "Failed : postgresql_replication_repmgr_password is not defined or empty."
+
+- name: Update the /etc/hosts to add other postgresql servers
+  ansible.builtin.lineinfile:
+    dest: "/etc/hosts"
+    regexp: ".*\t{{ item }}\t{{ item }}"
+    line: "{{ hostvars[item]['ansible_host'] }}\t{{ item }}\t{{ item }}"
+    state: present
+  when: ansible_hostname != item
+  loop: "{{ groups[postgresql_replication_group] }}"
+
+- name: Install repmgr
+  ansible.builtin.apt:
+    name: postgresql-{{ postgresql_replication_version_major }}-repmgr,python3-psycopg2
+    state: present
+    update_cache: true
+
+- name: Create repmgr user
+  community.postgresql.postgresql_user:
+    name: repmgr
+    password: "{{ postgresql_replication_repmgr_password }}"
+    role_attr_flags: REPLICATION,CREATEDB,CREATEROLE,SUPERUSER
+  become: true
+  become_user: postgres
+
+- name: Create database for repmgr
+  community.postgresql.postgresql_db:
+    name: repmgr
+    owner: repmgr
+  when: ansible_hostname == postgresql_replication_primary
+  become: true
+  become_user: postgres
+
+- name: Add pg_hba.conf
+  ansible.builtin.template:
+    src: pg_hba.conf.j2
+    dest: "/etc/postgresql/{{ postgresql_replication_version_major }}/main/pg_hba.conf"
+    mode: 0640
+    owner: postgres
+    group: postgres
+  notify: RELOAD_POSTGRESQL
+
+- name: Add pgpass for authentication
+  ansible.builtin.template:
+    src: pgpass.j2
+    dest: "/var/lib/postgresql/.pgpass"
+    mode: 0600
+    owner: postgres
+    group: postgres
+
+- name: Add replication.conf for replication settings
+  ansible.builtin.template:
+    src: replication.conf.j2
+    dest: "/etc/postgresql/{{ postgresql_replication_version_major }}/main/conf.d/replication.conf"
+    mode: 0640
+    owner: postgres
+    group: postgres
+  notify: RESTART_PROSTGRESQL
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Add /etc/default/repmgr settings
+  ansible.builtin.template:
+    src: repmgrd.j2
+    dest: /etc/default/repmgrd
+    mode: 0640
+    owner: postgres
+    group: postgres
+  notify: RESTART_REPMGR
+
+- name: Add repmgr.conf
+  ansible.builtin.template:
+    src: repmgr.conf.j2
+    dest: /etc/repmgr.conf
+    mode: 0640
+    owner: postgres
+    group: postgres
+  notify: RESTART_REPMGR
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Start repmgr if not already start
+  ansible.builtin.service:
+    name: repmgrd
+    state: started
+    enabled: yes
+
+- name: Check repmgr status
+  ansible.builtin.command: "repmgr cluster show"
+  become: true
+  become_user: postgres
+  changed_when: False
+  ignore_errors: True
+  register: __test_repmgr
+
+- name: Include primary tasks
+  ansible.builtin.include_tasks: primary.yml
+  when: ansible_hostname == postgresql_replication_primary
+
+- name: Include primary tasks
+  ansible.builtin.include_tasks: secondary.yml
+  when: ansible_hostname != postgresql_replication_primary
+
+- name: Push pg_rsync.sh
+  ansible.builtin.template:
+    src: pg_sync.sh.j2
+    dest: /opt/pg_sync.sh
+    mode: "750"
+    owner: root
+    group: root
