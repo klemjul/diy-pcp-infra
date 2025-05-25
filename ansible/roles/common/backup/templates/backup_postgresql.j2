@@ -1,0 +1,1 @@
+{{ backup_cron_schedule }} root touch {{ backup_metrics_dir }}/backup_{{ backup_app }}_start.txt && /opt/scripts/backups/backup_{{ backup_app }}.sh && touch {{ backup_metrics_dir }}/backup_{{ backup_app }}_end.txt

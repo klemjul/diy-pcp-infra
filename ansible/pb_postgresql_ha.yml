@@ -79,3 +79,12 @@
           }
       privileges_schema:
         - { schemas_name: "public", owner: "user_mattermost", db: "mattermost" }
+
+- name: Postgresql primary backup
+  become: yes
+  hosts: diypcp-postgresql1
+  roles:
+    - common/backup
+    - monitoring/metrics_task_times
+  vars:
+    backup_app: "postgresql"
