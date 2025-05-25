@@ -1,0 +1,80 @@
+---
+# tasks file for roles/mattermost
+
+- name: Create group mattermost
+  ansible.builtin.group:
+    name: "{{ mattermost_user }}"
+    system: yes
+    state: present
+
+- name: Create user mattermost
+  ansible.builtin.user:
+    name: "{{ mattermost_user }}"
+    system: yes
+    shell: /sbin/nologin
+    state: present
+
+- name: Check if mattermost exists
+  ansible.builtin.stat:
+    path: /opt/mattermost/bin/mattermost
+  register: __mattermost_exists
+
+- name: If mattermost exists get version
+  ansible.builtin.shell: "cat /etc/systemd/system/mattermost.service | grep Version | sed s/'.*Version '//g"
+  register: __get_mattermost_version
+  when: __mattermost_exists.stat.exists
+  changed_when: false
+  tags:
+    - skip_ansible_lint
+
+- name: Create directory for mattermost data
+  ansible.builtin.file:
+    path: "/opt/mattermost/data"
+    state: directory
+    mode: 0750
+    owner: "{{ mattermost_user }}"
+    group: "{{ mattermost_user }}"
+
+- name: Download mattermost
+  ansible.builtin.unarchive:
+    src: "https://releases.mattermost.com/{{ mattermost_version }}/mattermost-{{ mattermost_version }}-linux-amd64.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+  when: not __mattermost_exists.stat.exists or not __get_mattermost_version.stdout == mattermost_version
+
+- name: Move the binary to the final destination
+  ansible.builtin.copy:
+    src: "/tmp/mattermost/"
+    dest: "/opt/mattermost"
+    owner: "{{ mattermost_user }}"
+    group: "{{ mattermost_user }}"
+    mode: 0750
+    remote_src: yes
+  when: not __mattermost_exists.stat.exists or not __get_mattermost_version.stdout == mattermost_version
+
+- name: Mattermost systemd file
+  ansible.builtin.template:
+    src: "mattermost.service.j2"
+    dest: "/etc/systemd/system/mattermost.service"
+    owner: root
+    group: root
+    mode: 0750
+  notify: RELOAD_DAEMON_AND_RESTART_MATTERMOST
+
+- name: Mattermost configuration file
+  ansible.builtin.template:
+    src: "config.json.j2"
+    dest: "/opt/mattermost/config/config.json"
+    mode: 0750
+    owner: "{{ mattermost_user }}"
+    group: "{{ mattermost_user }}"
+  notify: RELOAD_DAEMON_AND_RESTART_MATTERMOST
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Start mattermost
+  ansible.builtin.systemd:
+    name: mattermost
+    state: started
+    enabled: yes

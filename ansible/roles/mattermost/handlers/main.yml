@@ -1,0 +1,9 @@
+---
+# handlers file for roles/mattermost
+
+- name: RELOAD_DAEMON_AND_RESTART_MATTERMOST
+  ansible.builtin.systemd:
+    name: mattermost
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

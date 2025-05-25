@@ -71,5 +71,8 @@ ansible-logging: ansible-monitoring
 ansible-postgresql: ansible-all-consul-services
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_postgresql.yml pb_postgresql_ha.yml
 
+ansible-mattermost: ansible-postgresql
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_mattermost.yml -e @./envs/sandbox/group_vars/domains.yml pb_mattermost.yml
+
 ansible-all-hardening: ansible-all
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_hardening.yml
