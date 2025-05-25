@@ -1,9 +1,0 @@
----
-# handlers file for roles/consul
-
-- name: Reload_daemon_and_restart_consul
-  ansible.builtin.systemd:
-    name: consul
-    state: restarted
-    daemon_reload: yes
-    enabled: yes

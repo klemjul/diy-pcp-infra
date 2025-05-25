@@ -2,13 +2,13 @@
   become: yes
   hosts: meta-app_monitoring
   roles:
-    - volumes
+    - common/volumes
     - monitoring/vmtools
     - monitoring/vmetrics
     - monitoring/alertmanager
     - monitoring/karma
     - monitoring/grafana
-    - consul_services
+    - consul/consul_services
     - monitoring/consul_exporter
   vars:
     vmtools_dir_disk_data: "/data"

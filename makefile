@@ -44,7 +44,8 @@ ansible-install:
 	cd ansible && \
 	ansible-galaxy collection install openstack.cloud && \
 	ansible-galaxy collection install community.general && \
-	ansible-galaxy collection install devsec.hardening
+	ansible-galaxy collection install devsec.hardening && \
+	ansible-galaxy collection install community.postgresql
 
 ansible-inventory:
 	cd ansible && ansible-inventory -i openstack.yml --list
@@ -66,6 +67,9 @@ ansible-monitoring: ansible-all-consul-services
 
 ansible-logging: ansible-monitoring
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_logging.yml
+
+ansible-postgresql: ansible-all-consul-services
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_postgresql.yml pb_postgresql_ha.yml
 
 ansible-all-hardening: ansible-all
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_hardening.yml

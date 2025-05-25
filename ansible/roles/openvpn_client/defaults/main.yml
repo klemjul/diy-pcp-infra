@@ -1,5 +1,0 @@
----
-# defaults file for roles/openvpn_client
-openvpn_client_user_list:
-  - user1
-openvpn_client_destination_key: "/tmp/"

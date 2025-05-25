@@ -1,0 +1,23 @@
+---
+# handlers file for roles/postgresql_simple
+
+- name: RESTART_POSTGRESQL
+  ansible.builtin.service:
+    name: postgresql
+    state: restarted
+
+- name: RELOAD_POSTGRESQL
+  ansible.builtin.service:
+    name: postgresql
+    state: reloaded
+
+- name: RECONFIGURE_DATA_DIR
+  become: true
+  become_user: postgres
+  ansible.builtin.shell:
+    cmd: |
+      /usr/lib/postgresql/{{ postgresql_simple_version_major }}/bin/pg_ctl init -D {{ postgresql_simple_data_dir }}
+  tags:
+    - skip_ansible_lint
+  ignore_errors: true
+  notify: RESTART_POSTGRESQL

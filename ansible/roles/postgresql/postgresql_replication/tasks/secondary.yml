@@ -1,0 +1,46 @@
+- name: Stop postgres on standby
+  ansible.builtin.service:
+    name: postgresql
+    state: stopped
+  when: ansible_hostname != postgresql_replication_primary and ansible_hostname not in __test_repmgr.stdout
+
+- name: Drop pg_data on standby
+  ansible.builtin.file:
+    path: "{{ postgresql_replication_data_dir }}/"
+    state: absent
+  when: ansible_hostname != postgresql_replication_primary  and ansible_hostname not in __test_repmgr.stdout
+
+- name: Add pg_data on standby
+  ansible.builtin.file:
+    path: "{{ postgresql_replication_data_dir }}/"
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0755
+  when: ansible_hostname != postgresql_replication_primary  and ansible_hostname not in __test_repmgr.stdout
+
+- name: Sync standby
+  ansible.builtin.command: "repmgr -h {{ postgresql_replication_primary }} -U repmgr -d repmgr standby clone -c"
+  become: true
+  become_user: postgres
+  when: ansible_hostname != postgresql_replication_primary  and ansible_hostname not in __test_repmgr.stdout
+  tags:
+    - skip_ansible_lint
+
+- name: Start postgres on standby
+  ansible.builtin.service:
+    name: postgresql
+    state: started
+  when: ansible_hostname != postgresql_replication_primary  and ansible_hostname not in __test_repmgr.stdout
+
+- name: Register standby
+  ansible.builtin.command: repmgr standby register
+  become: true
+  become_user: postgres
+  when: ansible_hostname != postgresql_replication_primary  and ansible_hostname not in __test_repmgr.stdout
+  notify: RESTART_REPMGR
+  tags:
+    - skip_ansible_lint
+
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers

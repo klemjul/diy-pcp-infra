@@ -1,0 +1,18 @@
+---
+# handlers file for roles/postgresql_replication
+- name: RESTART_REPMGR
+  ansible.builtin.systemd:
+    name: repmgrd
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+- name: RESTART_PROSTGRESQL
+  ansible.builtin.service:
+    name: postgresql
+    state: restarted
+
+- name: RELOAD_POSTGRESQL
+  ansible.builtin.service:
+    name: postgresql
+    state: reloaded

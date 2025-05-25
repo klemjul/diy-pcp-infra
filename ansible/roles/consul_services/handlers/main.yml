@@ -1,7 +1,0 @@
----
-# handlers file for roles/consul_services
-- name: Reload consul
-  ansible.builtin.systemd:
-    name: consul
-    state: reloaded
-  when: consul_services_list

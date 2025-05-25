@@ -4,7 +4,7 @@
   serial: 40
   gather_facts: no
   roles:
-    - consul_services
+    - consul/consul_services
   vars:
     consul_services_list:
       - {

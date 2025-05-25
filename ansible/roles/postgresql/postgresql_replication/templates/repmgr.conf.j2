@@ -1,0 +1,13 @@
+node_id={{ ansible_hostname | replace(postgresql_replication_pattern,"") }}
+node_name={{ ansible_hostname }}
+conninfo='host={{ ansible_hostname }} user=repmgr dbname=repmgr connect_timeout=2'
+data_directory='{{postgresql_replication_data_dir}}/'
+monitoring_history=yes
+reconnect_attempts=1
+reconnect_interval=1
+failover=automatic
+use_replication_slots=yes
+promote_command='/usr/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file'
+follow_command='/usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=%n'
+log_file='/var/log/postgresql/repmgr.log'
+log_level=INFO

@@ -1,0 +1,71 @@
+- name: Install our postgresql cluster
+  become: yes
+  hosts: meta-app_postgresql
+  roles:
+    - common/volumes
+    - postgresql/postgresql_simple
+  vars:
+    volumes_disks:
+      - { disk: "/dev/sdb", path: "/data", owner: "root", mode: "0755" }
+    postgresql_simple_data_dir: /data/postgresql
+    postgresql_simple_pghba_enabled: false
+
+- name: Install our postgresql replication
+  become: yes
+  hosts: diypcp-postgresql1,diypcp-postgresql2
+  serial: 1
+  roles:
+    - postgresql/postgresql_replication
+    - consul/consul_services
+  vars:
+    postgresql_replication_data_dir: "/data/postgresql"
+    postgresql_replication_group: "meta-app_postgresql"
+    postgresql_replication_pattern: "diypcp-postgresql"
+    postgresql_replication_primary: "diypcp-postgresql1"
+    postgresql_replication_pghba_entries:
+      - {
+          host: "host",
+          database: "mattermost",
+          user: "all",
+          address: "10.0.1.0/24",
+          method: "md5",
+        }
+    consul_services_list:
+      - {
+          name: "postgresql_primary",
+          type: "args",
+          check_target: "/opt/failover_postgresql.sh",
+          interval: "10s",
+          port: 5432,
+        }
+      - {
+          name: "postgresql",
+          type: "tcp",
+          check_target: "127.0.0.1:5432",
+          interval: "10s",
+          port: 5432,
+        }
+
+- name: Postgresql management
+  become: yes
+  hosts: diypcp-postgresql1
+  roles:
+    - postgresql/postgresql_manage
+  vars:
+    postgresql_manage:
+      users:
+        - {
+            name: "user_mattermost",
+            password: "{{ postgresql_manage_mattermost_password }}",
+          }
+      db_name:
+        - mattermost
+      privileges:
+        - {
+            db: "mattermost",
+            type: "database",
+            user: "user_mattermost",
+            permissions: "ALL",
+          }
+      privileges_schema:
+        - { schemas_name: "public", owner: "user_mattermost", db: "mattermost" }

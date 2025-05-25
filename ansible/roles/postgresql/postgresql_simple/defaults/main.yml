@@ -1,0 +1,11 @@
+---
+# defaults file for roles/postgresql_simple
+
+postgresql_simple_version_major: 16
+postgresql_simple_version_detail: "16.9-1.pgdg120+1"
+postgresql_simple_repo_key: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+postgresql_simple_repo_url: http://apt.postgresql.org/pub/repos/apt/
+postgresql_simple_listen: "*"
+postgresql_simple_params: ""
+postgresql_simple_data_dir: ""
+postgresql_simple_pghba_enabled: true

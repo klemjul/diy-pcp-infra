@@ -1,5 +1,6 @@
 infrastructure-cloud-infomaniak
 **/*.conf
+**/.DS_Store
 .venv
 data
 **/openrc.sh

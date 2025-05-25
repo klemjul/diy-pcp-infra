@@ -3,7 +3,7 @@
   hosts: meta-app_traefik
   roles:
     - traefik
-    - consul_services
+    - consul/consul_services
     - logging/logrotate
     - logging/vector
   vars:

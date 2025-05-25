@@ -12,4 +12,4 @@
     backup_metrics_dir: "/var/lib/metrics_task_times"
     backup_app: "consul"
   roles:
-    - ../../roles/backup
+    - ../../roles/common/backup

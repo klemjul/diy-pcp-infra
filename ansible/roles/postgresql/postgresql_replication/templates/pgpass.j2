@@ -1,0 +1,6 @@
+{%- for srv in groups[postgresql_replication_group] %}
+{%- if srv != ansible_hostname %}
+{{ srv }}:5432:repmgr:repmgr:{{ postgresql_replication_repmgr_password }}
+{{ srv }}:5432:replication:repmgr:{{ postgresql_replication_repmgr_password }}
+{% endif %}
+{% endfor %}
