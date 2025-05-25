@@ -40,6 +40,7 @@
       - { label: "errorlog", json: "errorlog.json", mode: "local" }
       - { label: "traefik", json: "traefik.json", mode: "local" }
       - { label: "consul", json: "consul.json", mode: "local" }
+      - { label: "postgres", json: "postgres.json", mode: "local" }
 
     volumes_disks:
       - { disk: "/dev/sdb", path: "{{ vmtools_dir_disk_data }}" }

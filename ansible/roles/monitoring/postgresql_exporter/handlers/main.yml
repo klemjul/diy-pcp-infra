@@ -1,0 +1,6 @@
+---
+# handlers file for roles/postgresql_exporter
+- name: RESTART_POSTGRESQL_EXPORTER
+  ansible.builtin.service:
+    name: postgresql_exporter
+    state: restarted

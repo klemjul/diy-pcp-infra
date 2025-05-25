@@ -1,0 +1,56 @@
+---
+# tasks file for roles/postgresql_exporter
+
+- name: Check if postgresql_exporter exists
+  ansible.builtin.stat:
+    path: "{{ postgresql_exporter_binary_path }}/postgres_exporter"
+  register: __postgresql_exporter_exists
+
+- name: If postgresql_exporter exists get version
+  ansible.builtin.shell: "cat /etc/systemd/system/postgresql_exporter.service | grep Version | sed s/'.*Version '//g"
+  register: __postgresql_exporter_get_version
+  when: __postgresql_exporter_exists.stat.exists
+  changed_when: false
+  tags:
+    - skip_ansible_lint
+
+- name: Download postgresql_exporter
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus-community/postgres_exporter/releases/download/v{{ postgresql_exporter_version }}/postgres_exporter-{{ postgresql_exporter_version }}.linux-amd64.tar.gz"
+    dest: "/tmp/"
+    remote_src: yes
+    mode: 0750
+    owner: "{{ postgresql_exporter_user }}"
+    group: "{{ postgresql_exporter_user }}"
+  when: not __postgresql_exporter_exists.stat.exists or not __postgresql_exporter_get_version.stdout == postgresql_exporter_version
+
+- name: Move the binary to the final destination
+  ansible.builtin.copy:
+    src: "/tmp/postgres_exporter-{{ postgresql_exporter_version }}.linux-amd64/postgres_exporter"
+    dest: "{{ postgresql_exporter_binary_path }}"
+    mode: 0750
+    remote_src: yes
+    owner: "{{ postgresql_exporter_user }}"
+    group: "{{ postgresql_exporter_user }}"
+  when: not __postgresql_exporter_exists.stat.exists or not __postgresql_exporter_get_version.stdout == postgresql_exporter_version
+
+- name: Clean
+  ansible.builtin.file:
+    path: "/tmp/postgres_exporter-{{ postgresql_exporter_version }}.linux-amd64/"
+    state: absent
+  when: not __postgresql_exporter_exists.stat.exists or not __postgresql_exporter_get_version.stdout == postgresql_exporter_version
+
+- name: Add systemd service for postgresql_exporter
+  ansible.builtin.template:
+    src: postgresql_exporter.service.j2
+    dest: "/etc/systemd/system/postgresql_exporter.service"
+    owner: root
+    group: root
+    mode: 0750
+  notify: RESTART_POSTGRESQL_EXPORTER
+
+- name: Start postgresql_exporter
+  ansible.builtin.service:
+    name: postgresql_exporter
+    state: started
+    enabled: yes
