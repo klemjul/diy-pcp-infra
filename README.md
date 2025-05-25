@@ -73,4 +73,6 @@ Extra variables (`-e`) are configured using files in the git-ignored `ansible/en
 | [./ansible/pb_logging.yml](./ansible/pb_logging.yml)                 | Configure Loki for log aggregation.                                                 |
 | [./ansible/pb_traefik.yml](./ansible/pb_traefik.yml)                 | Configure the Traefik instance.                                                     |
 | [./ansible/pb_openvpn.yml](./ansible/pb_openvpn.yml)                 | Configure the OpenVPN server.                                                       |
-| [./ansible/pb_openvpn_client.yml](./ansible/pb_openvpn_client.yml)   | Create and configure OpenVPN client certificates.                                   |
+| [./ansible/pb_openvpn_client.yml](./ansible/pb_openvpn_client.yml)   | Configure OpenVPN client certificates.                                              |
+| [./ansible/pb_postgresql_ha.yml](./ansible/pb_postgresql_ha.yml)     | Configure Postgresql cluster                                                        |
+| [./ansible/pb_mattermost.yml](./ansible/pb_mattermost.yml)           | Configure Mattermost instance                                                       |
