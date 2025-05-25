@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -euo pipefail
+
+DATABASES=$(su postgres -c "psql -q -A -t -c 'SELECT datname FROM pg_database'" | grep -v "template\|postgres")
+
+LOG={{ backup_log_dir }}/backup_{{ backup_app }}.log
+
+source /root/.config/restic/restic_{{ backup_app }}.creds
+
+echo $(date +"%Y-%m-%d.%H:%M:%S")" - Start Backups " | tee -a ${LOG}
+
+for database in ${DATABASES};do
+  echo $(date +"%Y-%m-%d.%H:%M:%S")" - Start - ${database}" | tee -a ${LOG}
+  echo $(date +"%Y-%m-%d.%H:%M:%S")" - StartDump - ${database}" | tee -a ${LOG}
+  su postgres -c "/usr/bin/pg_dump --clean --if-exists --format=custom ${database}" | restic backup --tag ${database} --stdin-filename ${database}.sql --stdin    
+  echo $(date +"%Y-%m-%d.%H:%M:%S")" - End - ${database}" | tee -a ${LOG}
+done
+
+echo $(date +"%Y-%m-%d.%H:%M:%S")" - Start - CleanS3 - ${database}" | tee -a ${LOG}
+# purge backup
+restic forget --keep-last=14 \
+    --keep-within-daily=30d \
+    --keep-within-weekly=90d \
+    --keep-within-monthly=365d \
+    --group-by '' \
+    --prune
+echo $(date +"%Y-%m-%d.%H:%M:%S")" - End - CleanS3 - ${database}" | tee -a ${LOG}
+
+echo $(date +"%Y-%m-%d.%H:%M:%S")" - End Backups " | tee -a ${LOG}
+
+# how to restore dump
+# restic dump latest /mattermost.sql |  su postgres -c "pg_restore -s -c -d test"

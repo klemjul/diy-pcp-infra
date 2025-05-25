@@ -26,7 +26,7 @@
   loop:
     - { dir: "/root/.config/restic/", mode: "0750" }
     - { dir: "/opt/scripts/backups", mode: "0750" }
-    - { dir: "/var/log/backups/", mode: "0755" }
+    - { dir: "{{ backup_log_dir }}", mode: "0755" }
     - { dir: "{{ backup_metrics_dir }}", mode: "0755" }
 
 - name: Add restic configuration file
@@ -42,7 +42,7 @@
     group: root
     mode: 0700
 
-- name: Install the consul backup script
+- name: Install the backup script for {{ backup_app }}
   ansible.builtin.template:
     src: backup_{{ backup_app }}.sh.j2
     dest: /opt/scripts/backups/backup_{{ backup_app }}.sh
