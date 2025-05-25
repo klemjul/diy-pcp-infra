@@ -1,0 +1,27 @@
+- name: Mattermost
+  become: yes
+  hosts: meta-app_mattermost
+  roles:
+    - common/volumes
+    - mattermost
+    - consul/consul_services
+  vars:
+    volumes_disks:
+      - { disk: "/dev/sdb", path: "/opt", owner: "root", mode: "0755" }
+    consul_services_list:
+      - {
+          name: "mattermost",
+          type: "http",
+          target: "http://127.0.0.1:8065",
+          interval: "10s",
+          port: 8065,
+          tags:
+            [
+              "traefik.enable=true",
+              "traefik.http.routers.router-mattermost.entrypoints=http,https",
+              "traefik.http.routers.router-mattermost.rule=Host(`{{ mattermost_domain }}`)",
+              "traefik.http.routers.router-mattermost.service=mattermost",
+              "traefik.http.routers.router-mattermost.middlewares=auth@file,to_https@file",
+              "traefik.http.routers.router-mattermost.tls.certresolver=certs_gen",
+            ],
+        }
