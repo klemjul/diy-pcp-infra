@@ -1,4 +1,5 @@
 module "loki" {
+  count             = var.loki_standalone_instance ? 1 : 0
   source            = "../modules/openstack_instance"
   instance_count    = 1
   instance_name     = "${var.project_prefix}-loki"

@@ -1,13 +1,17 @@
 - name: Logging
   become: yes
-  hosts: meta-app_loki
+  hosts: meta-app_monitoring
+  # Uncomment the following line if you deploy loki as an standalone instance
+  # hosts: meta-app_loki
   roles:
     - common/volumes
     - logging/loki
     - consul/consul_services
   vars:
     volumes_disks:
-      - { disk: "/dev/sdb", path: "/data", owner: "loki" }
+      # Uncomment the following line if you deploy loki as an standalone instance
+      # - { disk: "/dev/sdb", path: "/data", owner: "loki" }
+      - { disk: "/dev/sdc", path: "/data_loki", owner: "loki" }
     consul_services_list:
       - {
           name: "loki",

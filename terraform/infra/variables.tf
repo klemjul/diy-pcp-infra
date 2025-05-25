@@ -29,3 +29,18 @@ variable "instance_image_id" {
 variable "instance_traefik_public_fixed_ip" {
   type = string
 }
+
+variable "consul_server_count" {
+  type    = number
+  default = 1
+  validation {
+    condition     = var.consul_server_count == 1 || var.consul_server_count == 3
+    error_message = "consul_server_count must be either 1 or 3."
+  }
+}
+
+variable "loki_standalone_instance" {
+  type        = bool
+  default     = false
+  description = "If true, deploys Loki as a standalone instance. If false, deploys Loki in the monitoring instance."
+}

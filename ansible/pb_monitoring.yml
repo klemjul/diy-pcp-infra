@@ -11,8 +11,8 @@
     - consul/consul_services
     - monitoring/consul_exporter
   vars:
-    vmtools_dir_disk_data: "/data"
-    vmetrics_dir_disk_data: "/data"
+    vmtools_dir_disk_data: "/data_vmetrics"
+    vmetrics_dir_disk_data: "/data_vmetrics"
     vmtools_vmalert_remote: vmetrics.service.sandbox.consul
     vmtools_vmalert_grafana: grafana.service.sandbox.consul
     karma_alertmanager_uri: "http://alertmanager.service.sandbox.consul:9093"

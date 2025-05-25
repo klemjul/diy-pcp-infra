@@ -1,7 +1,7 @@
 
 module "consul" {
   source            = "../modules/openstack_instance"
-  instance_count    = 3
+  instance_count    = var.consul_server_count
   instance_name     = "${var.project_prefix}-consul"
   instance_key_pair = "${var.project_prefix}-key-service-account"
   instance_security_groups = [
