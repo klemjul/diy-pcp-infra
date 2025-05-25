@@ -1,0 +1,58 @@
+---
+# tasks file for roles/postgresql_pitr_wallg
+- name: Install wal-g directory
+  ansible.builtin.file:
+    path: /etc/wal-g
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0750
+
+- name: Add walg.json credentials
+  ansible.builtin.template:
+    src: walg.json.j2
+    dest: "/etc/wal-g/walg.json"
+    mode: 0640
+    owner: postgres
+    group: postgres
+  notify: RESTART_POSTGRESQL
+
+- name: Check if wal-g exists
+  ansible.builtin.stat:
+    path: "{{ postgresql_pitr_wallg_binary_path }}/wal-g"
+  register: __wal_g_exists
+
+- name: Install wal-g binary
+  ansible.builtin.unarchive:
+    src: "https://github.com/wal-g/wal-g/releases/download/v{{ postgresql_pitr_wallg_version }}/wal-g-pg-ubuntu-20.04-amd64.tar.gz"
+    dest: "/tmp/"
+    remote_src: yes
+    mode: 0750
+    owner: postgres
+    group: postgres
+  when: not __wal_g_exists.stat.exists
+
+- name: Move the binary to the final destination
+  ansible.builtin.copy:
+    src: "/tmp/wal-g-pg-ubuntu-20.04-amd64"
+    dest: "{{ postgresql_pitr_wallg_binary_path }}/wal-g"
+    mode: 0750
+    remote_src: yes
+    owner: "postgres"
+    group: "postgres"
+  when: not __wal_g_exists.stat.exists
+
+- name: Clean
+  ansible.builtin.file:
+    path: "/tmp/wal-g-pg-ubuntu-20.04-amd64"
+    state: absent
+  when: not __wal_g_exists.stat.exists
+
+- name: Add archive.conf for archive settings
+  ansible.builtin.template:
+    src: archive.conf.j2
+    dest: "/etc/postgresql/{{ postgresql_pitr_wallg_postgres_version_major }}/main/conf.d/archive.conf"
+    mode: 0640
+    owner: postgres
+    group: postgres
+  notify: RESTART_POSTGRESQL

@@ -76,6 +76,15 @@
     group: postgres
   notify: RESTART_PROSTGRESQL
 
+- name: Add archive.conf for archive settings
+  ansible.builtin.template:
+    src: archive.conf.j2
+    dest: "/etc/postgresql/{{ postgresql_replication_version_major }}/main/conf.d/archive.conf"
+    mode: 0640
+    owner: postgres
+    group: postgres
+  notify: RESTART_PROSTGRESQL
+
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 

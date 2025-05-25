@@ -1,0 +1,9 @@
+---
+# defaults file for roles/postgresql_pitr_wallg
+postgresql_pitr_wallg_version: 3.0.0
+postgresql_pitr_wallg_binary_path: /usr/local/bin
+postgresql_pitr_wallg_s3_key: ""
+postgresql_pitr_wallg_s3_secret_key: ""
+postgresql_pitr_wallg_s3_region: ""
+postgresql_pitr_wallg_s3_prefix: ""
+postgresql_pitr_wallg_postgres_version_major: 16

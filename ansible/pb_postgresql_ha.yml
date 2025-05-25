@@ -88,3 +88,9 @@
     - monitoring/metrics_task_times
   vars:
     backup_app: "postgresql"
+
+- name: Postgresql primary backup wall-g
+  become: yes
+  hosts: diypcp-postgresql1
+  roles:
+    - postgresql/postgresql_pitr_wallg
