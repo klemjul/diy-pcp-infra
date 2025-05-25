@@ -53,6 +53,14 @@
   with_fileglob:
     - alerts/*.yml
 
+- name: Validate vmalert rule files
+  ansible.builtin.command: "/usr/local/bin/vmalert-prod -rule=/etc/vmalert/{{ item | basename }} -dryRun"
+  register: rule_check_result
+  failed_when: rule_check_result.rc != 0
+  changed_when: false
+  with_fileglob:
+    - alerts/*.yml
+
 - name: "Vmtools services - {{ item }} "
   ansible.builtin.template:
     src: "{{ item }}.service.j2"
