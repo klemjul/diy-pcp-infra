@@ -42,12 +42,14 @@
     src: vmagent.yml.j2
     dest: "{{ vmtools_vmagent_dir_config }}/vmagent.yml"
     mode: 0750
+  notify: "RESTART_vmagent"
 
 - name: Vmalert alerts configuration files
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "/etc/vmalert/{{ item | basename }}"
     mode: 0750
+  notify: "RESTART_vmalert"
   with_fileglob:
     - alerts/*.yml
 
@@ -56,7 +58,7 @@
     src: "{{ item }}.service.j2"
     dest: "/etc/systemd/system/{{ item }}.service"
     mode: 0750
-  notify: "Restart {{ item }}"
+  notify: "RESTART_{{ item }}"
   loop:
     - vmagent
     - vmalert

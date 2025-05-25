@@ -32,13 +32,13 @@ groups:
       description: Some instances of service {{ $labels.service_name }} failed
     expr: |-
       sum by(service_name,dc) (
-        ((sum by(service_name, node, dc) (consul_health_service_status{check!~"_service_maintenance.*",status!="passing"})
+        ((sum by(service_name, node, dc) (consul_health_service_status{check!~"_service_maintenance.*",status!="passing", service_name!~".*_primary"})
         - (sum by(service_name, node, dc) (consul_service_checks)
-        - sum by(service_name, node, dc) (consul_health_service_status{check!~"_service_maintenance.*"})))
+        - sum by(service_name, node, dc) (consul_health_service_status{check!~"_service_maintenance.*", service_name!~".*_primary"})))
         - on(node) group_left() 
           sum by(node) (sum by(node) (consul_health_node_status) 
-        - sum by(node) (consul_health_node_status{check!~"_node_maintenance"}))))
-        / sum by(service_name,dc) (consul_health_service_status{check!~"_service_maintenance.*"}) 
+        - sum by(node) (consul_health_node_status{check!~"_node_maintenance", service_name!~".*_primary"}))))
+        / sum by(service_name,dc) (consul_health_service_status{check!~"_service_maintenance.*", service_name!~".*_primary"}) 
       > 0 < 1
     for: 10m
     labels:
