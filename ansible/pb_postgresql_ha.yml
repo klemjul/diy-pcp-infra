@@ -4,11 +4,28 @@
   roles:
     - common/volumes
     - postgresql/postgresql_simple
+    - monitoring/postgresql_exporter
+    - consul/consul_services
   vars:
     volumes_disks:
       - { disk: "/dev/sdb", path: "/data", owner: "root", mode: "0755" }
     postgresql_simple_data_dir: /data/postgresql
     postgresql_simple_pghba_enabled: false
+    consul_services_list:
+      - {
+          name: "postgresql",
+          type: "tcp",
+          check_target: "127.0.0.1:5432",
+          interval: "10s",
+          port: 5432,
+        }
+      - {
+          name: "postgresql_exporter",
+          type: "tcp",
+          check_target: "127.0.0.1:9187",
+          interval: "10s",
+          port: 9187,
+        }
 
 - name: Install our postgresql replication
   become: yes
@@ -31,13 +48,6 @@
           method: "md5",
         }
     consul_services_list:
-      - {
-          name: "postgresql_primary",
-          type: "args",
-          check_target: "/opt/failover_postgresql.sh",
-          interval: "10s",
-          port: 5432,
-        }
       - {
           name: "postgresql",
           type: "tcp",

@@ -1,14 +1,14 @@
 ---
 # handlers file for roles/vmtools
 
-- name: Restart vmagent
+- name: RESTART_vmagent
   ansible.builtin.systemd:
     name: vmagent
     state: restarted
     enabled: yes
     daemon_reload: yes
 
-- name: Restart vmalert
+- name: RESTART_vmalert
   ansible.builtin.systemd:
     name: vmalert
     state: restarted
