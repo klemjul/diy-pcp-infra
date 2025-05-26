@@ -1,0 +1,5 @@
+## Backups
+{{ postgresql_pitr_wallg_cron_backup }} root touch {{ postgresql_pitr_wallg_metrics_dir }}/backup_walgbasebackup_start.txt && /opt/scripts/backups/walg_pg_basebackup.sh -m && touch {{ postgresql_pitr_wallg_metrics_dir }}/backup_walgbasebackup_end.txt
+
+## Cleans
+{{ postgresql_pitr_wallg_cron_clean }} root touch {{ postgresql_pitr_wallg_metrics_dir }}/clean_walgbasebackup_start.txt && /opt/scripts/backups/walg_pg_basebackup.sh -c {{ postgresql_pitr_wallg_cron_retains }} && touch {{ postgresql_pitr_wallg_metrics_dir }}/clean_walgbasebackup_end.txt

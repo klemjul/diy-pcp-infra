@@ -1,0 +1,14 @@
+---
+# defaults file for roles/postgresql_pitr_wallg
+postgresql_pitr_wallg_version: 3.0.0
+postgresql_pitr_wallg_binary_path: /usr/local/bin
+postgresql_pitr_wallg_s3_key: ""
+postgresql_pitr_wallg_s3_secret_key: ""
+postgresql_pitr_wallg_s3_region: ""
+postgresql_pitr_wallg_s3_prefix: ""
+postgresql_pitr_wallg_postgres_version_major: 16
+postgresql_pitr_wallg_cron_backup: "0 1 * * *"
+postgresql_pitr_wallg_cron_clean: "0 2 * * *"
+postgresql_pitr_wallg_cron_retains: 7
+postgresql_pitr_wallg_pg_datadir: ""
+postgresql_pitr_wallg_metrics_dir: "/var/lib/metrics_task_times"

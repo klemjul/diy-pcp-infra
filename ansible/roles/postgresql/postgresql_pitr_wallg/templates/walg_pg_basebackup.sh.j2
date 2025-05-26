@@ -1,0 +1,110 @@
+#!/bin/bash
+
+
+# Variables ############################################################
+
+export SYSTEMD_PAGER=''
+GREEN="\e[1;34m"
+DC="\e[0m"
+
+
+# Functions ###########################################################
+
+help_list() {
+  echo "Usage:
+
+  ${0##*/} [-h][--list-backups][--clean-backup]
+
+Options:
+
+  -h, --help
+    help display
+
+  -l, --list-backups
+    list backups
+
+  -c, --clean-backups
+    clean old backups (wal & base_backups) 
+    keep intermediate wals
+
+  -m, --make-backup
+    create a new backup
+
+  "
+}
+
+parse_options() {
+  case $1 in
+    -h|help)
+      help_list
+      exit
+     ;;
+    -l|--list-backups)
+      option="1"
+      ;;
+    -c|--clean-backups)
+      option="2"
+      ;;
+    -m|--make-backups)
+      option="3"
+      ;;    
+    *)
+      echo "Option not known: ${opt} - Run ${0##*/} -h ">&2
+      exit 1
+  esac
+}
+
+ec(){
+echo
+echo -e $GREEN$1$DC
+echo
+}
+
+
+make_backup(){
+
+  su postgres -c "PGHOST=/var/run/postgresql PGUSER=postgres /usr/local/bin/wal-g --config /etc/wal-g/walg.json backup-push {{ postgresql_pitr_wallg_pg_datadir }}"
+
+}
+
+list_backups(){
+
+  su postgres -c "PGHOST=/var/run/postgresql PGUSER=postgres /usr/local/bin/wal-g --config /etc/wal-g/walg.json backup-list"
+
+}
+
+clean_backups(){
+
+  su postgres -c "PGHOST=/var/run/postgresql PGUSER=postgres /usr/local/bin/wal-g --config /etc/wal-g/walg.json delete retain FULL $1 --confirm"
+
+}
+
+## Run #####################################################################
+
+parse_options $1
+
+if [ "$option" == "1" ]; then
+
+  echo
+  ec "Last PG base_backups"
+  list_backups
+
+fi
+
+if [ "$option" == "2" ]; then
+
+  echo
+  ec "Clean backups..."
+  clean_backups $2
+  ec "Backups cleaned"
+
+fi
+
+if [ "$option" == "3" ]; then
+
+  echo
+  ec "Make backup..."
+  make_backup
+  ec "Backup ended"
+
+fi

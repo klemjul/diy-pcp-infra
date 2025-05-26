@@ -7,3 +7,8 @@ backup_s3_key:
 backup_s3_secret_key:
 backup_s3_aws_region:
 backup_restic_secret_password:
+
+postgresql_pitr_wallg_s3_region:
+postgresql_pitr_wallg_s3_key:
+postgresql_pitr_wallg_s3_secret_key:
+postgresql_pitr_wallg_s3_prefix:

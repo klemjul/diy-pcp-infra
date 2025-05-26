@@ -1,0 +1,6 @@
+---
+# handlers file for roles/postgresql_pitr_wallg
+- name: RESTART_POSTGRESQL
+  ansible.builtin.service:
+    name: postgresql
+    state: restarted

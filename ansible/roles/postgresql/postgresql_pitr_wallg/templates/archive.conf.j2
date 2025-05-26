@@ -1,0 +1,3 @@
+archive_mode = on
+archive_command = '/usr/local/bin/wal-g --config /etc/wal-g/walg.json wal-push %p'
+restore_command = '/usr/local/bin/wal-g --config /etc/wal-g/walg.json wal-fetch %f %p'
