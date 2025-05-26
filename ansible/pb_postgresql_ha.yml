@@ -94,3 +94,5 @@
   hosts: diypcp-postgresql1
   roles:
     - postgresql/postgresql_pitr_wallg
+  vars:
+    postgresql_pitr_wallg_pg_datadir: "/data/postgresql"

@@ -56,3 +56,30 @@
     owner: postgres
     group: postgres
   notify: RESTART_POSTGRESQL
+
+- name: Install directories for wal-g backups
+  ansible.builtin.file:
+    path: "{{ item.dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+    - { dir: "/opt/scripts/backups", mode: "0750" }
+    - { dir: "{{ postgresql_pitr_wallg_metrics_dir }}", mode: "0755" }
+
+- name: Push walg_pg_basebackup.sh.sh
+  ansible.builtin.template:
+    src: walg_pg_basebackup.sh.j2
+    dest: /opt/scripts/backups/walg_pg_basebackup.sh
+    mode: "750"
+    owner: postgres
+    group: postgres
+
+- name: Add a cron for wal-g backups
+  ansible.builtin.template:
+    src: walg_backup.j2
+    dest: /etc/cron.d/walg_backup
+    owner: root
+    group: root
+    mode: 0750
