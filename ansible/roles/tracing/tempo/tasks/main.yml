@@ -1,0 +1,75 @@
+---
+# tasks file for roles/tempo
+- name: Install utils
+  ansible.builtin.apt:
+    name:
+      - curl
+      - wget
+      - unzip
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Check if tempo exists
+  ansible.builtin.stat:
+    path: /usr/local/bin/tempo
+  register: __tempo_exists
+
+- name: If tempo exists get version
+  ansible.builtin.shell: "cat /etc/systemd/system/tempo.service | grep Version | sed s/'.*Version '//g"
+  register: __get_tempo_version
+  when: __tempo_exists.stat.exists
+  tags:
+    - skip_ansible_lint
+  changed_when: false
+
+- name: Create directory for tempo configuration
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+  loop:
+    - "{{ tempo_dir_config }}"
+    - "{{ tempo_dir_data }}"
+
+- name: Download tempo
+  ansible.builtin.unarchive:
+    src: "https://github.com/grafana/tempo/releases/download/v{{ tempo_version }}/tempo_{{ tempo_version }}_linux_amd64.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+  when: not __tempo_exists.stat.exists or not __get_tempo_version.stdout == tempo_version
+
+- name: Move the binary to the final destination
+  ansible.builtin.copy:
+    src: "/tmp/{{ item }}"
+    dest: "{{ tempo_dir_binary }}/{{ item }}"
+    mode: 0750
+    remote_src: yes
+  when: not __tempo_exists.stat.exists or not __get_tempo_version.stdout == tempo_version
+  loop:
+    - tempo
+    - tempo-cli
+    - tempo-query
+
+- name: Tempo systemd file
+  ansible.builtin.template:
+    src: "tempo.service.j2"
+    dest: "/etc/systemd/system/tempo.service"
+    mode: 0750
+  notify: "RESTART_TEMPO"
+
+- name: Tempo configuration file
+  ansible.builtin.template:
+    src: "tempo.yml.j2"
+    dest: "{{ tempo_dir_config }}/tempo.yaml"
+    mode: 0750
+  notify: "RESTART_TEMPO"
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Start tempo
+  ansible.builtin.systemd:
+    name: tempo
+    state: started
+    enabled: yes

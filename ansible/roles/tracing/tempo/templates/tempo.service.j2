@@ -1,0 +1,11 @@
+[Unit]
+Description=tempo Version  {{ tempo_version }}
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/tempo -config.file={{ tempo_dir_config }}/tempo.yaml
+
+[Install]
+WantedBy=multi-user.target

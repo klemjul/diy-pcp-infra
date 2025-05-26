@@ -68,6 +68,9 @@ ansible-monitoring: ansible-all-consul-services
 ansible-logging: ansible-monitoring
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_logging.yml
 
+ansible-tracing: ansible-logging
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_tracing.yml
+
 ansible-postgresql: ansible-all-consul-services
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_postgresql.yml pb_postgresql_ha.yml
 

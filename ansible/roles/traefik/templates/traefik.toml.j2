@@ -61,3 +61,10 @@ watch = true
     addEntryPointsLabels = true
     addRoutersLabels = true
     addServicesLabels = true
+
+{% if traefik_tracing_otlp_endpoint is defined %}
+[tracing]
+  serviceName = "traefik"
+  [tracing.otlp.http]
+    endpoint = "{{ traefik_tracing_otlp_endpoint}}"
+{% endif %}

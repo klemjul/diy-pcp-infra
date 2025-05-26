@@ -1,0 +1,44 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    jaeger:
+      protocols:
+        thrift_http:
+        grpc:
+        thrift_binary:
+        thrift_compact:
+    zipkin:
+    otlp:
+      protocols:
+        http:
+        grpc:
+    opencensus:
+
+compactor:
+  compaction:
+    block_retention: 48h
+
+metrics_generator:
+  registry:
+    external_labels:
+      source: tempo
+  storage:
+    path: {{ tempo_dir_data }}/generator/wal
+    remote_write:
+    - url: {{ tempo_remote_write_metrics }}
+      send_exemplars: true
+
+storage:
+  trace:
+    backend: local
+    wal:
+      path: {{ tempo_dir_data }}/wal
+    local:
+      path: {{ tempo_dir_data }}/blocks
+
+overrides:
+  defaults:
+    metrics_generator:
+      processors: [service-graphs, span-metrics]
