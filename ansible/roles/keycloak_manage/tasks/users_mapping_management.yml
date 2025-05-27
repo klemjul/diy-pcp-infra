@@ -14,3 +14,4 @@
     target_username: '{{ keycloak_role_mapping[item]["username"] }}'
     roles: '{{ keycloak_role_mapping[item]["roles"] }}'
   run_once: true
+  no_log: true

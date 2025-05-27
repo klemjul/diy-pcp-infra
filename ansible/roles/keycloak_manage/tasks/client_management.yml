@@ -33,6 +33,7 @@
     base_url: '{{ keycloak_clients[item]["client_url"] }}'
     protocol: openid-connect
   run_once: true
+  no_log: true
 
 - name: Create Keycloak Clients Roles
   become: false

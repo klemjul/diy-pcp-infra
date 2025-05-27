@@ -33,6 +33,7 @@
         before: "^;admin_password = admin",
         after: "admin_password = {{ grafana_admin_password }}",
       }
+  no_log: true
 
 - name: Add datasources
   community.grafana.grafana_datasource:

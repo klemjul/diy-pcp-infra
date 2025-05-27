@@ -21,3 +21,4 @@
         value: '{{ keycloak_users[item]["password"] }}'
         temporary: false # change it
   run_once: true
+  no_log: true
