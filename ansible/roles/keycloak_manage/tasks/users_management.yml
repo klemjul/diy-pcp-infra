@@ -1,0 +1,23 @@
+- name: Create our users
+  become: false
+  delegate_to: localhost
+  community.general.keycloak_user:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ keycloak_url }}"
+    auth_realm: master
+    auth_username: "{{ keycloak_admin_user }}"
+    auth_password: "{{ keycloak_admin_user_password }}"
+    validate_certs: false
+    state: present
+    realm: '{{ keycloak_users[item]["realm"] }}'
+    username: '{{ keycloak_users[item]["username"] }}'
+    firstName: '{{ keycloak_users[item]["firstname"] }}'
+    lastName: '{{ keycloak_users[item]["lastname"] }}'
+    email: '{{ keycloak_users[item]["email"] }}'
+    enabled: true
+    emailVerified: true
+    credentials:
+      - type: password
+        value: '{{ keycloak_users[item]["password"] }}'
+        temporary: false # change it
+  run_once: true

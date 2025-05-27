@@ -10,3 +10,9 @@ keycloak_keystore_secret:
 keycloak_ream:
 keycloak_grafana_client_id:
 keycloak_grafana_client_secret:
+
+keycloak_user1_username:
+keycloak_user1_firstname:
+keycloak_user1_lastname:
+keycloak_user1_email:
+keycloak_user1_password:

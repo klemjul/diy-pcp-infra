@@ -56,3 +56,18 @@
           - admin
           - editor
           - viewer
+    keycloak_users:
+      user1:
+        realm: "{{ keycloak_ream }}"
+        username: "{{ keycloak_user1_username }}"
+        firstname: "{{ keycloak_user1_firstname }}"
+        lastname: "{{ keycloak_user1_lastname }}"
+        email: "{{ keycloak_user1_email }}"
+        password: "{{ keycloak_user1_password }}"
+    keycloak_role_mapping:
+      user1_to_grafana:
+        realm: "{{ keycloak_ream }}"
+        client: "{{ keycloak_grafana_client_id }}"
+        username: "{{ keycloak_user1_username }}"
+        roles:
+          - name: editor

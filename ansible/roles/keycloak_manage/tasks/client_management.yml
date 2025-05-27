@@ -33,3 +33,22 @@
     base_url: '{{ keycloak_clients[item]["client_url"] }}'
     protocol: openid-connect
   run_once: true
+
+- name: Create Keycloak Clients Roles
+  become: false
+  delegate_to: localhost
+  community.general.keycloak_role:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ keycloak_url }}"
+    auth_realm: master
+    auth_username: "{{ keycloak_admin_user }}"
+    auth_password: "{{ keycloak_admin_user_password }}"
+    validate_certs: false
+    state: present
+    realm: '{{ keycloak_clients[item]["realm"] }}'
+    client_id: '{{ keycloak_clients[item]["client_id"] }}'
+    name: "{{ role }}"
+  loop: '{{ keycloak_clients[item]["client_roles"] }}'
+  loop_control:
+    loop_var: role
+  run_once: true
