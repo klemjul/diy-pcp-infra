@@ -16,6 +16,7 @@
     vmtools_vmalert_remote: vmetrics.service.sandbox.consul
     vmtools_vmalert_grafana: grafana.service.sandbox.consul
     karma_alertmanager_uri: "http://alertmanager.service.sandbox.consul:9093"
+    grafana_oauth_enabled: true
     grafana_prometheus_address: "vmetrics.service.sandbox.consul:8428"
     grafana_datasources:
       - {
@@ -107,7 +108,7 @@
               "traefik.http.routers.router-grafana.entrypoints=http,https",
               "traefik.http.routers.router-grafana.rule=Host(`{{ grafana_domain }}`)",
               "traefik.http.routers.router-grafana.service=grafana",
-              "traefik.http.routers.router-grafana.middlewares=auth@file,to_https@file,secure_headers@file",
+              "traefik.http.routers.router-grafana.middlewares=to_https@file,secure_headers@file",
               "traefik.http.routers.router-grafana.tls.certresolver=certs_gen",
             ],
         }

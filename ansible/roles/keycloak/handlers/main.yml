@@ -1,0 +1,8 @@
+---
+# handlers file for roles/keycloak
+- name: RESTART_KEYCLOAK
+  ansible.builtin.service:
+    name: keycloak
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

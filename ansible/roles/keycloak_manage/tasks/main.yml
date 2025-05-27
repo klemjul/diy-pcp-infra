@@ -1,0 +1,41 @@
+---
+# tasks file for roles/keycloak_manage
+- name: Wait for service up
+  ansible.builtin.uri:
+    url: "{{ keycloak_url }}" # checkov:skip=CKV2_ANSIBLE_1
+    status_code: [200, 301, 302]
+    validate_certs: false # checkov:skip=CKV_ANSIBLE_1
+  register: __result
+  until: __result.status in [200,301,302]
+  retries: 30
+  delay: 2
+
+- name: Create Keycloak Realms
+  become: false
+  delegate_to: localhost
+  community.general.keycloak_realm:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ keycloak_url }}"
+    auth_realm: master
+    auth_username: "{{ keycloak_admin_user }}"
+    auth_password: "{{ keycloak_admin_user_password }}"
+    validate_certs: false
+    state: present
+    id: "{{ item }}"
+    realm: "{{ item }}"
+    enabled: true
+  run_once: true
+  no_log: true
+  loop: "{{ keycloak_realms }}"
+
+- name: Manage keycloak clients
+  ansible.builtin.include_tasks: client_management.yml
+  loop: "{{ keycloak_clients.keys() | list }}"
+
+- name: Manage keycloak users
+  ansible.builtin.include_tasks: users_management.yml
+  loop: "{{ keycloak_users.keys() | list }}"
+
+- name: Manage keycloak users roles mapping
+  ansible.builtin.include_tasks: users_mapping_management.yml
+  loop: "{{ keycloak_role_mapping.keys() | list }}"

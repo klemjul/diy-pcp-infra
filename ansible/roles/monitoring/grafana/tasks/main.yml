@@ -12,6 +12,16 @@
     state: present
     validate_certs: yes
 
+- name: Check variables
+  ansible.builtin.assert:
+    that:
+      - grafana_admin_password is defined
+      - grafana_admin_user is defined
+      - grafana_admin_user | length > 0
+      - grafana_admin_password | length > 0
+    fail_msg: "Failed : grafana_admin_user and grafana_admin_password must be defined."
+  no_log: true
+
 - name: Install grafana
   ansible.builtin.apt:
     name: grafana
@@ -33,6 +43,7 @@
         before: "^;admin_password = admin",
         after: "admin_password = {{ grafana_admin_password }}",
       }
+  no_log: true
 
 - name: Add datasources
   community.grafana.grafana_datasource:
@@ -72,3 +83,8 @@
     cmd: "grafana-cli admin reset-admin-password {{ grafana_admin_password }}"
   register: __command_admin
   changed_when: "'Admin password changed successfully' in __command_admin.stdout"
+  no_log: true
+
+- name: Add oauth if needed
+  ansible.builtin.include_tasks: add_oauth.yml
+  when: grafana_oauth_enabled

@@ -42,10 +42,17 @@
     postgresql_replication_pghba_entries:
       - {
           host: "host",
-          database: "mattermost",
+          database: "{{ postgresql_manage_mattermost_database }}",
           user: "all",
           address: "10.0.1.0/24",
           method: "md5",
+        }
+      - {
+          host: "host",
+          database: "{{ postgresql_manage_keycloak_database }}",
+          user: "all",
+          address: "10.0.1.0/24",
+          method: "scram-sha-256",
         }
     consul_services_list:
       - {
@@ -65,20 +72,40 @@
     postgresql_manage:
       users:
         - {
-            name: "user_mattermost",
+            name: "{{ postgresql_manage_mattermost_username }}",
             password: "{{ postgresql_manage_mattermost_password }}",
           }
+        - {
+            name: "{{ postgresql_manage_keycloak_username }}",
+            password: "{{ postgresql_manage_keycloak_password }}",
+          }
       db_name:
-        - mattermost
+        - "{{ postgresql_manage_mattermost_database }}"
+        - "{{ postgresql_manage_keycloak_database }}"
       privileges:
         - {
-            db: "mattermost",
+            db: "{{ postgresql_manage_mattermost_database }}",
             type: "database",
-            user: "user_mattermost",
+            user: "{{ postgresql_manage_mattermost_username }}",
+            permissions: "ALL",
+          }
+        - {
+            db: "{{ postgresql_manage_keycloak_database }}",
+            type: "database",
+            user: "{{ postgresql_manage_keycloak_username }}",
             permissions: "ALL",
           }
       privileges_schema:
-        - { schemas_name: "public", owner: "user_mattermost", db: "mattermost" }
+        - {
+            schemas_name: "public",
+            owner: "{{ postgresql_manage_mattermost_username }}",
+            db: "{{ postgresql_manage_mattermost_database }}",
+          }
+        - {
+            schemas_name: "public",
+            owner: "{{ postgresql_manage_keycloak_username }}",
+            db: "{{ postgresql_manage_keycloak_database }}",
+          }
 
 - name: Postgresql primary backup
   become: yes

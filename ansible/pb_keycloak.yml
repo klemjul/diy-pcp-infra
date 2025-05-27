@@ -1,0 +1,73 @@
+- name: Install keycloak
+  become: yes
+  hosts: meta-app_keycloak
+  roles:
+    - keycloak
+    - consul/consul_services
+  vars:
+    keycloak_database_user: "{{ postgresql_manage_keycloak_username }}"
+    keycloak_database_password: "{{ postgresql_manage_keycloak_password }}"
+    keycloak_database_host: "postgresql_primary.service.consul"
+    keycloak_database_db: "{{ postgresql_manage_keycloak_database }}"
+    keycloak_server_group: "meta-app_keycloak"
+    keycloak_admin_user: "{{ keycloak_admin_user_username }}"
+    keycloak_admin_password: "{{ keycloak_admin_user_password }}"
+    keycloak_keystore_secret: "{{ keycloak_keystore_secret }}"
+    keycloak_url: "https://{{ keycloak_domain }}/auth/"
+    consul_services_list:
+      - {
+          name: "keycloak",
+          type: "tcp",
+          check_target: "127.0.0.1:8080",
+          interval: "10s",
+          port: 8080,
+          tags:
+            [
+              "traefik.enable=true",
+              "traefik.http.routers.router-keycloak.entrypoints=http,https",
+              "traefik.http.routers.router-keycloak.rule=Host(`{{ keycloak_domain }}`)",
+              "traefik.http.routers.router-keycloak.service=keycloak",
+              "traefik.http.routers.router-keycloak.middlewares=to_https@file",
+              "traefik.http.routers.router-keycloak.tls.certresolver=certs_gen",
+            ],
+        }
+
+- name: Install our keycloak Realm and Clients
+  hosts: meta-app_keycloak
+  roles:
+    - keycloak_manage
+  vars:
+    keycloak_admin_user: "{{ keycloak_admin_user_username }}"
+    keycloak_admin_user_password: "{{ keycloak_admin_user_password }}"
+    keycloak_url: "https://{{ keycloak_domain }}/auth/"
+    keycloak_realms:
+      - "{{ keycloak_realm }}"
+    keycloak_clients:
+      grafana:
+        realm: "{{ keycloak_realm }}"
+        client_id: "{{ keycloak_grafana_client_id }}"
+        client_secret: "{{ keycloak_grafana_client_secret }}"
+        redirect_uris:
+          - "https://{{ grafana_domain }}/*"
+          - "http://{{ grafana_domain }}/*"
+        client_url: "https://{{ grafana_domain }}"
+        description: "Client for grafana users"
+        client_roles:
+          - admin
+          - editor
+          - viewer
+    keycloak_users:
+      user1:
+        realm: "{{ keycloak_realm }}"
+        username: "{{ keycloak_user1_username }}"
+        firstname: "{{ keycloak_user1_firstname }}"
+        lastname: "{{ keycloak_user1_lastname }}"
+        email: "{{ keycloak_user1_email }}"
+        password: "{{ keycloak_user1_password }}"
+    keycloak_role_mapping:
+      user1_to_grafana:
+        realm: "{{ keycloak_realm }}"
+        client: "{{ keycloak_grafana_client_id }}"
+        username: "{{ keycloak_user1_username }}"
+        roles:
+          - name: editor

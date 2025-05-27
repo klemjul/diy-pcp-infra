@@ -1,0 +1,111 @@
+---
+# tasks file for roles/keycloak
+
+- name: Update the /etc/hosts
+  ansible.builtin.lineinfile:
+    dest: "/etc/hosts"
+    regexp: ".*\t{{ item }}\t{{ item }}"
+    line: "{{ hostvars[item]['ansible_host'] }}\t{{ item }}\t{{ item }}"
+    state: present
+  when: ansible_hostname != item
+  loop: "{{ groups[keycloak_server_group] }}"
+
+- name: Create user keycloak
+  ansible.builtin.user:
+    name: keycloak
+    system: yes
+    shell: /sbin/nologin
+    state: present
+
+- name: Create keycloak directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: keycloak
+    group: keycloak
+    mode: 0755
+    state: directory
+  loop:
+    - /var/log/keycloak/
+    - /opt/keycloak
+
+- name: Install openjdk package
+  ansible.builtin.apt:
+    name: "{{ keycloak_java_package }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Check if keycloak dir already exists
+  ansible.builtin.stat:
+    path: /opt/keycloak/keycloak-{{ keycloak_version }}
+  register: __keycloak_exists
+
+- name: Download Keycloak
+  ansible.builtin.unarchive:
+    src: https://github.com/keycloak/keycloak/releases/download/{{ keycloak_version }}/keycloak-{{ keycloak_version }}.tar.gz
+    dest: /opt/keycloak
+    remote_src: yes
+    owner: keycloak
+    group: keycloak
+  when: not __keycloak_exists.stat.exists
+
+- name: Add keycloak configuration
+  ansible.builtin.template:
+    src: keycloak.conf.j2
+    dest: "/opt/keycloak/keycloak-{{ keycloak_version }}/conf/keycloak.conf"
+    owner: keycloak
+    group: keycloak
+    mode: 0750
+  notify: RESTART_KEYCLOAK
+  no_log: true
+
+- name: Add quarkus configuration
+  ansible.builtin.template:
+    src: quarkus.properties.j2
+    dest: "/opt/keycloak/keycloak-{{ keycloak_version }}/conf/quarkus.properties"
+    owner: keycloak
+    group: keycloak
+    mode: 0750
+  notify: RESTART_KEYCLOAK
+
+- name: Add ispn cache configuration
+  ansible.builtin.template:
+    src: cache-ispn.xml.j2
+    dest: "/opt/keycloak/keycloak-{{ keycloak_version }}/conf/cache-ispn.xml"
+    owner: keycloak
+    group: keycloak
+    mode: 0750
+  notify: RESTART_KEYCLOAK
+
+- name: Add keycloak systemd service
+  ansible.builtin.template:
+    src: keycloak.service.j2
+    dest: "/etc/systemd/system/keycloak.service"
+    owner: root
+    group: root
+    mode: 0750
+  notify: RESTART_KEYCLOAK
+  no_log: true
+
+- name: Check if keystore already exists
+  ansible.builtin.stat:
+    path: /opt/keycloak/keycloak-{{ keycloak_version }}/conf/server.keystore
+  register: __keystore_exists
+
+- name: Create keystore if not exists
+  ansible.builtin.shell: "/usr/bin/keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 -validity 7000 -keystore server.keystore -dname cn=ServerAdministrator,o=Acme,c=FR -keypass {{ keycloak_keystore_secret }} -storepass {{ keycloak_keystore_secret }}"
+  args:
+    chdir: /opt/keycloak/keycloak-{{ keycloak_version }}/conf/
+  tags:
+    - skip_ansible_lint
+  when: __keystore_exists.stat.exists == false
+  no_log: true
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Start keycloak systemd service
+  ansible.builtin.service:
+    name: keycloak
+    state: started
+    enabled: yes

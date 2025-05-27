@@ -69,7 +69,11 @@ ansible-traefik: ansible-all-consul-services
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_traefik.yml pb_traefik.yml
 
 ansible-monitoring: ansible-all-consul-services
-	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/domains.yml pb_monitoring.yml
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
+	-e @./envs/sandbox/group_vars/domains.yml \
+	-e @./envs/sandbox/group_vars/meta-app_monitoring.yml \
+	-e @./envs/sandbox/group_vars/meta-app_keycloak.yml \
+	pb_monitoring.yml
 
 ansible-logging: ansible-monitoring
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_logging.yml
@@ -78,10 +82,17 @@ ansible-tracing: ansible-logging
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_tracing.yml
 
 ansible-postgresql: ansible-all-consul-services
-	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_postgresql.yml pb_postgresql_ha.yml
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
+	-e @./envs/sandbox/group_vars/meta-app_postgresql.yml \
+	-e @./envs/sandbox/group_vars/meta-app_mattermost.yml \
+	-e @./envs/sandbox/group_vars/meta-app_keycloak.yml \
+	pb_postgresql_ha.yml
 
 ansible-mattermost: ansible-postgresql
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_mattermost.yml -e @./envs/sandbox/group_vars/domains.yml pb_mattermost.yml
+
+ansible-keycloak: ansible-postgresql
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_keycloak.yml -e @./envs/sandbox/group_vars/domains.yml pb_keycloak.yml
 
 ansible-all-hardening: ansible-all
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_hardening.yml

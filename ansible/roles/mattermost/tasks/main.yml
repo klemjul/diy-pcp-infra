@@ -69,6 +69,7 @@
     owner: "{{ mattermost_user }}"
     group: "{{ mattermost_user }}"
   notify: RELOAD_DAEMON_AND_RESTART_MATTERMOST
+  no_log: true
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers

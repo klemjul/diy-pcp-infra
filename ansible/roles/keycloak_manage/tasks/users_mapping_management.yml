@@ -1,0 +1,17 @@
+- name: Map role to default user
+  become: false
+  delegate_to: localhost
+  community.general.keycloak_user_rolemapping:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ keycloak_url }}"
+    auth_realm: master
+    auth_username: "{{ keycloak_admin_user }}"
+    auth_password: "{{ keycloak_admin_user_password }}"
+    validate_certs: false
+    state: present
+    client_id: '{{ keycloak_role_mapping[item]["client"] }}'
+    realm: '{{ keycloak_role_mapping[item]["realm"] }}'
+    target_username: '{{ keycloak_role_mapping[item]["username"] }}'
+    roles: '{{ keycloak_role_mapping[item]["roles"] }}'
+  run_once: true
+  no_log: true

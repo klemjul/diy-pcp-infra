@@ -1,0 +1,16 @@
+[Unit]
+After=network.target auditd.service
+
+[Service]
+Environment="KEYCLOAK_ADMIN={{ keycloak_admin_user }}"
+Environment="KEYCLOAK_ADMIN_PASSWORD={{ keycloak_admin_password }}"
+ExecStartPre=/opt/keycloak/keycloak-{{ keycloak_version }}/bin/kc.sh build --cache-config-file=cache-ispn.xml --cache=ispn
+ExecStart=/opt/keycloak/keycloak-{{ keycloak_version }}/bin/kc.sh start --optimized --proxy-headers=forwarded --log="console,file" --log-file=/var/log/keycloak/keycloak.log
+ExecStop=/opt/keycloak/keycloak-{{ keycloak_version }}/bin/kc.sh stop
+User=root
+Group=root
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

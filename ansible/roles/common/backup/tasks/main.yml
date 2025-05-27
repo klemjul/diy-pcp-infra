@@ -8,6 +8,7 @@
       - backup_restic_secret_password is defined and backup_restic_secret_password | length > 0
       - backup_s3_secret_key is defined and backup_s3_secret_key | length > 0
     fail_msg: "Required variables are missing!"
+  no_log: true
 
 - name: Install cron and restic
   ansible.builtin.apt:
@@ -41,6 +42,7 @@
     owner: root
     group: root
     mode: 0700
+  no_log: true
 
 - name: Install the backup script for {{ backup_app }}
   ansible.builtin.template:

@@ -64,6 +64,7 @@
     chdir: "{{ ansible_env.HOME }}/openvpn-ca/"
     executable: /bin/bash
     creates: "{{ ansible_env.HOME }}/openvpn-ca/pki/ta.key"
+  no_log: true
 
 - name: Copy key and certificates to /etc/openvpn
   ansible.builtin.copy:

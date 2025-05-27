@@ -18,6 +18,7 @@
       - postgresql_replication_repmgr_password is defined
       - postgresql_replication_repmgr_password | length > 0
     fail_msg: "Failed : postgresql_replication_repmgr_password is not defined or empty."
+  no_log: true
 
 - name: Update the /etc/hosts to add other postgresql servers
   ansible.builtin.lineinfile:
@@ -66,6 +67,7 @@
     mode: 0600
     owner: postgres
     group: postgres
+  no_log: true
 
 - name: Add replication.conf for replication settings
   ansible.builtin.template:
