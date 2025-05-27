@@ -11,7 +11,7 @@ module "gitlab" {
   instance_image_id            = var.instance_image_id
   instance_flavor_name         = "a4-ram8-disk20-perf1"
 
-  instance_volumes_count = 1
+  instance_volumes_count = 2
   metadatas = {
     project = var.project_prefix,
     app     = "gitlab"

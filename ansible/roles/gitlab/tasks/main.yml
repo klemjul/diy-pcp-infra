@@ -80,10 +80,11 @@
   when: not gitlab_enable_ssh
   notify: RECONFIGURE_GITLAB
 
-- name: Disable user signup
-  ansible.builtin.command: >
-    gitlab-rails runner "ApplicationSetting.last.update(signup_enabled: false)"
-  changed_when: false
+# NOTE: not working the first time because gitlab not initialized yet
+# - name: Disable user signup
+#   ansible.builtin.command: >
+#     gitlab-rails runner "ApplicationSetting.last.update(signup_enabled: false)"
+#   changed_when: false
 
 - name: Set external URL for GitLab instance
   ansible.builtin.lineinfile:
@@ -92,3 +93,7 @@
     line: 'external_url "{{ gitlab_external_url }}"'
   when: gitlab_external_url != ""
   notify: RECONFIGURE_GITLAB
+
+- name: Include docker registry
+  ansible.builtin.include_tasks: docker_registry.yml
+  when: gitlab_docker_registry_enabled

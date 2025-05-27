@@ -4,3 +4,4 @@ vmetrics_domain:
 mattermost_domain:
 keycloak_domain:
 gitlab_domain:
+docker_registry_domain:

@@ -9,7 +9,16 @@
     gitlab_external_url: "https://{{ gitlab_domain }}"
     gitlab_data_dirs: "/data/gitlab/"
     volumes_disks:
-      - { disk: "/dev/sdb", path: "/data/gitlab" }
+      - { disk: "/dev/sdb", path: "/data/gitlab", owner: "git" }
+      - {
+          disk: "/dev/sdc",
+          path: "/data/gitlab-docker-registry",
+          owner: "registry",
+        }
+    gitlab_docker_registry_enabled: true
+    gitlab_docker_registry_all: "true"
+    gitlab_docker_registry_domain: "{{ docker_registry_domain }}"
+    gitlab_docker_registry_data_dir: "/data/gitlab-docker-registry"
     consul_services_list:
       - {
           name: "gitlab",
@@ -25,5 +34,21 @@
               "traefik.http.routers.router-gitlab.service=gitlab",
               "traefik.http.routers.router-gitlab.middlewares=to_https@file,secure_headers@file",
               "traefik.http.routers.router-gitlab.tls.certresolver=certs_gen",
+            ],
+        }
+      - {
+          name: "gitlab-registry",
+          type: "tcp",
+          target: "127.0.0.1:5000",
+          interval: "10s",
+          port: 5000,
+          tags:
+            [
+              "traefik.enable=true",
+              "traefik.http.routers.router-gitlab-registry.entrypoints=http,https",
+              "traefik.http.routers.router-gitlab-registry.rule=Host(`{{ docker_registry_domain }}`)",
+              "traefik.http.routers.router-gitlab-registry.service=gitlab-registry",
+              "traefik.http.routers.router-gitlab-registry.middlewares=to_https@file",
+              "traefik.http.routers.router-gitlab-registry.tls.certresolver=certs_gen",
             ],
         }
