@@ -41,10 +41,10 @@
     keycloak_admin_user_password: "{{ keycloak_admin_user_password }}"
     keycloak_url: "https://{{ keycloak_domain }}/auth/"
     keycloak_realms:
-      - "{{ keycloak_ream }}"
+      - "{{ keycloak_realm }}"
     keycloak_clients:
       grafana:
-        realm: "{{ keycloak_ream }}"
+        realm: "{{ keycloak_realm }}"
         client_id: "{{ keycloak_grafana_client_id }}"
         client_secret: "{{ keycloak_grafana_client_secret }}"
         redirect_uris:
@@ -58,7 +58,7 @@
           - viewer
     keycloak_users:
       user1:
-        realm: "{{ keycloak_ream }}"
+        realm: "{{ keycloak_realm }}"
         username: "{{ keycloak_user1_username }}"
         firstname: "{{ keycloak_user1_firstname }}"
         lastname: "{{ keycloak_user1_lastname }}"
@@ -66,7 +66,7 @@
         password: "{{ keycloak_user1_password }}"
     keycloak_role_mapping:
       user1_to_grafana:
-        realm: "{{ keycloak_ream }}"
+        realm: "{{ keycloak_realm }}"
         client: "{{ keycloak_grafana_client_id }}"
         username: "{{ keycloak_user1_username }}"
         roles:
