@@ -1,0 +1,32 @@
+- name: Add oauth to grafana.ini
+  ansible.builtin.blockinfile:
+    path: /etc/grafana/grafana.ini
+    insertafter: ".*auth.generic_oauth.*"
+    block: |
+      enabled = true
+      name = Keycloak-OAuth
+      allow_sign_up = true
+      client_id = {{ keycloak_grafana_client_id }}
+      client_secret = {{ keycloak_grafana_client_secret }}
+      scopes = openid email profile offline_access roles
+      email_attribute_path = email
+      login_attribute_path = username
+      name_attribute_path = full_name
+      auth_url = https://{{ keycloak_domain }}/auth/realms/{{ keycloak_ream }}/protocol/openid-connect/auth
+      token_url = https://{{ keycloak_domain }}/auth/realms/{{ keycloak_ream }}/protocol/openid-connect/token
+      api_url = https://{{ keycloak_domain }}/auth/realms/{{ keycloak_ream }}/protocol/openid-connect/userinfo
+      role_attribute_path = contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'
+  notify: Restart grafana
+  no_log: true
+
+- name: Change root_url to use sso
+  ansible.builtin.lineinfile:
+    path: /etc/grafana/grafana.ini
+    regexp: "{{ item.before }}"
+    line: "{{ item.after }}"
+  with_items:
+    - { before: "^;domain = ", after: "domain = {{ grafana_domain }}" }
+    - {
+        before: "^;root_url = %",
+        after: "root_url = https://{{ grafana_domain }}",
+      }

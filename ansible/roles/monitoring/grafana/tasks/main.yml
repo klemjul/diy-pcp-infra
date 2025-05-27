@@ -73,3 +73,7 @@
     cmd: "grafana-cli admin reset-admin-password {{ grafana_admin_password }}"
   register: __command_admin
   changed_when: "'Admin password changed successfully' in __command_admin.stdout"
+
+- name: Add oauth if needed
+  ansible.builtin.include_tasks: add_oauth.yml
+  when: grafana_oauth_enabled

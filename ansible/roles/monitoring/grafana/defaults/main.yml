@@ -1,6 +1,7 @@
 ---
 # defaults file for roles/grafana
 
+grafana_oauth_enabled: false
 grafana_admin_user: "grafana_admin_user"
 grafana_admin_password: "grafana_admin_password"
 grafana_prometheus_address: "grafana_prometheus_address:8428"
