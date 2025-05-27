@@ -2,7 +2,7 @@
   become: yes
   hosts: meta-app_keycloak
   roles:
-    - keycloak
+    - keycloak/keycloak
     - consul/consul_services
   vars:
     keycloak_database_user: "{{ postgresql_manage_keycloak_username }}"
@@ -35,7 +35,7 @@
 - name: Install our keycloak Realm and Clients
   hosts: meta-app_keycloak
   roles:
-    - keycloak_manage
+    - keycloak/keycloak_manage
   vars:
     keycloak_admin_user: "{{ keycloak_admin_user_username }}"
     keycloak_admin_user_password: "{{ keycloak_admin_user_password }}"
