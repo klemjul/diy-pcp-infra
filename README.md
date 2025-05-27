@@ -76,3 +76,5 @@ Extra variables (`-e`) are configured using files in the git-ignored `ansible/en
 | [./ansible/pb_openvpn_client.yml](./ansible/pb_openvpn_client.yml)   | Configure OpenVPN client certificates.                                              |
 | [./ansible/pb_postgresql_ha.yml](./ansible/pb_postgresql_ha.yml)     | Configure Postgresql cluster                                                        |
 | [./ansible/pb_mattermost.yml](./ansible/pb_mattermost.yml)           | Configure Mattermost instance                                                       |
+| [./ansible/pb_tracing.yml](./ansible/pb_tracing.yml)                 | Configure Tempo backend instance                                                    |
+| [./ansible/pb_keycloak.yml](./ansible/pb_keycloak.yml)               | Configure Keycloak instance                                                         |
