@@ -44,3 +44,9 @@ variable "loki_standalone_instance" {
   default     = false
   description = "If true, deploys Loki as a standalone instance. If false, deploys Loki in the monitoring instance."
 }
+
+variable "deploy_mattermost" {
+  type        = bool
+  default     = false
+  description = "If true, deploys Mattermost instance."
+}
