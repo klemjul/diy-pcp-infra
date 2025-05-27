@@ -1,0 +1,81 @@
+- name: Activate or not systematic docker registry
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: "# gitlab_rails.*gitlab_default_projects_features_container_registry.*"
+    line: "gitlab_rails['gitlab_default_projects_features_container_registry'] = {{ gitlab_docker_registry_all }}"
+  notify: RECONFIGURE_GITLAB
+
+- name: Set the registry url
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: "# registry_external_url.*"
+    line: "registry_external_url 'http://{{ gitlab_docker_registry_domain }}'"
+  notify: RECONFIGURE_GITLAB
+
+- name: Ensure the docker registry is activate
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: "# gitlab_rails.*registry_enabled.*"
+    line: "gitlab_rails['registry_enabled'] = true"
+  notify: RECONFIGURE_GITLAB
+
+- name: Set the registry domain
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: "# gitlab_rails.*registry_host.*"
+    line: "gitlab_rails['registry_host'] = '{{ gitlab_docker_registry_domain }}'"
+  notify: RECONFIGURE_GITLAB
+
+- name: Set the regsitry api url
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: "# gitlab_rails.*registry_api_url.*"
+    line: "gitlab_rails['registry_api_url'] = 'http://{{ gitlab_docker_registry_domain }}'"
+  notify: RECONFIGURE_GITLAB
+
+- name: Ensure registry is enabled
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: "# registry.*enable.*"
+    line: "registry['enable'] = true"
+  notify: RECONFIGURE_GITLAB
+
+- name: Change the registry interface
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: "# registry.*registry_http_addr.*"
+    line: "registry['registry_http_addr'] = '0.0.0.0:5000'"
+  notify: RECONFIGURE_GITLAB
+
+- name: Change the registry dir
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: "# registry.*registry_path.*"
+    line: "registry['registry_path'] = '{{ gitlab_docker_registry_data_dir }}'"
+  when: gitlab_docker_registry_data_dir
+  notify: RECONFIGURE_GITLAB
+
+- name: Ensure important GitLab directories are owned by registry
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: registry
+    group: registry
+    state: directory
+    recurse: yes
+  loop:
+    - "{{ gitlab_docker_registry_data_dir }}"
+  when: gitlab_docker_registry_data_dir
+
+- name: Disable regsitry on nginx
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: "# registry_nginx.*enable.*"
+    line: "registry_nginx['enable'] = false"
+  notify: RECONFIGURE_GITLAB
+
+- name: Change the listen port
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: "# registry_nginx.*listen_port.*"
+    line: registry_nginx['listen_port'] = 5005
+  notify: RECONFIGURE_GITLAB

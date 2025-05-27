@@ -1,4 +1,5 @@
 module "mattermost" {
+  count             = var.deploy_mattermost ? 1 : 0
   source            = "../modules/openstack_instance"
   instance_count    = 1
   instance_name     = "${var.project_prefix}-mattermost"

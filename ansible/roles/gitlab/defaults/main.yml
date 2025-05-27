@@ -1,0 +1,14 @@
+---
+# defaults file for roles/gitlab
+
+gitlab_version: 17.11.0-ce.0
+gitlab_external_url:
+gitlab_listen_https: "false"
+gitlab_listen_port: 80
+gitlab_enable_ssh: false
+gitlab_data_dirs:
+
+gitlab_docker_registry_enabled: false
+gitlab_docker_registry_all: "false"
+gitlab_docker_registry_domain:
+gitlab_docker_registry_data_dir:

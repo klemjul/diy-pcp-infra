@@ -16,7 +16,6 @@ Refer to `./defaults/main.yml` comments
 Dependencies
 ------------
 
-- community.general.iptables_state
 
 Example Playbook
 ----------------
