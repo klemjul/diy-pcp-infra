@@ -1,0 +1,29 @@
+- name: Gitlab
+  become: yes
+  hosts: meta-app_gitlab
+  roles:
+    - common/volumes
+    - gitlab
+    - consul/consul_services
+  vars:
+    gitlab_external_url: "https://{{ gitlab_domain }}"
+    gitlab_data_dirs: "/data/gitlab/"
+    volumes_disks:
+      - { disk: "/dev/sdb", path: "/data/gitlab" }
+    consul_services_list:
+      - {
+          name: "gitlab",
+          type: "http",
+          target: "http://127.0.0.1:80",
+          interval: "10s",
+          port: 80,
+          tags:
+            [
+              "traefik.enable=true",
+              "traefik.http.routers.router-gitlab.entrypoints=http,https",
+              "traefik.http.routers.router-gitlab.rule=Host(`{{ gitlab_domain }}`)",
+              "traefik.http.routers.router-gitlab.service=gitlab",
+              "traefik.http.routers.router-gitlab.middlewares=to_https@file,secure_headers@file",
+              "traefik.http.routers.router-gitlab.tls.certresolver=certs_gen",
+            ],
+        }

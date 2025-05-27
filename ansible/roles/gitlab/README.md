@@ -1,7 +1,7 @@
 Role Name
 =========
 
-This Ansible role automates the installation and configuration of Consul.
+This Ansible role automates the installation and configuration of Gitlab CE.
 
 Requirements
 ------------
@@ -20,4 +20,4 @@ Dependencies
 Example Playbook
 ----------------
 
-`ansible-playbook -i openstack.yml -u clouduser pb_consul.yml`
+`ansible-playbook -i openstack.yml -u clouduser pb_gitlab.yml`

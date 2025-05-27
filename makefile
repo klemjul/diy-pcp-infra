@@ -94,5 +94,10 @@ ansible-mattermost: ansible-postgresql
 ansible-keycloak: ansible-postgresql
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_keycloak.yml -e @./envs/sandbox/group_vars/domains.yml pb_keycloak.yml
 
+ansible-gitlab: ansible-postgresql
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
+	-e @./envs/sandbox/group_vars/domains.yml \
+	pb_gitlab.yml
+
 ansible-all-hardening: ansible-all
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_hardening.yml

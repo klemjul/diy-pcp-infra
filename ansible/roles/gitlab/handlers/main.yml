@@ -1,0 +1,12 @@
+---
+# handlers file for roles/gitlab
+
+- name: RECONFIGURE_GITLAB
+  ansible.builtin.shell:
+    cmd: gitlab-ctl reconfigure
+  args:
+    executable: "/bin/bash"
+  changed_when: false
+  failed_when: false
+  async: 800
+  poll: 10

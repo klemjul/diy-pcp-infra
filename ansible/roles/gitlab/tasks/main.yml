@@ -1,0 +1,94 @@
+---
+# tasks file for roles/gitlab
+- name: Install required utility packages
+  ansible.builtin.apt:
+    name: gnupg2,software-properties-common,postfix,ca-certificates
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Add GitLab package signing GPG key
+  ansible.builtin.apt_key:
+    url: "https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey"
+
+- name: Add GitLab CE APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb https://packages.gitlab.com/gitlab/gitlab-ce/debian bookworm main"
+    state: present
+
+- name: Ensure important GitLab directories are owned by git
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: git
+    group: git
+    state: directory
+    recurse: yes
+  loop:
+    - "{{ gitlab_data_dirs }}"
+
+- name: Install GitLab CE
+  ansible.builtin.apt:
+    name: gitlab-ce={{ gitlab_version }}
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Configure custom Git data directory
+  ansible.builtin.blockinfile:
+    path: /etc/gitlab/gitlab.rb
+    insertafter: ".*For setting up different data storing directory.*"
+    block: |
+      gitaly['configuration'] = {
+        storage: [
+          {
+            name: 'default',
+            path: '{{ gitlab_data_dirs }}',
+          },
+        ],
+      }
+  when: gitlab_data_dirs != ""
+  notify: RECONFIGURE_GITLAB
+
+- name: Set listen_port for Reverse Proxy
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: ".*nginx['listen_port'] = nil"
+    line: "nginx['listen_port'] = {{ gitlab_listen_port }}"
+  when: gitlab_listen_port != ""
+  notify: RECONFIGURE_GITLAB
+
+- name: Disable Default Prometheus Node Exporter
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: ".*node_exporter['enable'] = true"
+    line: "node_exporter['enable'] = false"
+  notify: RECONFIGURE_GITLAB
+
+- name: Set listen_https for Reverse Proxy
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    insertafter: ".*nginx['listen_https'] = nil"
+    line: "nginx['listen_https'] = {{ gitlab_listen_https }}"
+  when: gitlab_listen_https != ""
+  notify: RECONFIGURE_GITLAB
+
+- name: Disable Git over SSH in GitLab
+  ansible.builtin.lineinfile:
+    path: /etc/gitlab/gitlab.rb
+    regexp: "^gitlab_rails\\['gitlab_shell_ssh_port'\\]"
+    line: "gitlab_rails['gitlab_shell_ssh_port'] = 0"
+  when: not gitlab_enable_ssh
+  notify: RECONFIGURE_GITLAB
+
+- name: Disable user signup
+  ansible.builtin.command: >
+    gitlab-rails runner "ApplicationSetting.last.update(signup_enabled: false)"
+  changed_when: false
+
+- name: Set external URL for GitLab instance
+  ansible.builtin.lineinfile:
+    dest: /etc/gitlab/gitlab.rb
+    regex: "external_url.*"
+    line: 'external_url "{{ gitlab_external_url }}"'
+  when: gitlab_external_url != ""
+  notify: RECONFIGURE_GITLAB
