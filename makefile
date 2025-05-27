@@ -1,4 +1,5 @@
 PYTHON := python3.11
+PIP := pip3
 VENV := .venv
 TF_BACKEND_DIRS := terraform/vpn terraform/infra terraform/backup
 TF_MODULE_DIRS := terraform/modules/openstack_instance terraform/modules/openstack_network
@@ -8,7 +9,8 @@ TF_ALL_DIRS := $(TF_BACKEND_DIRS) $(TF_MODULE_DIRS)
 .PHONY: pre-commit-init tf-init tf-lint tf-test tf-fmt tf-validate \
         ansible-lint ansible-install ansible-inventory ansible-all \
         ansible-consul ansible-all-consul-services ansible-traefik \
-        ansible-monitoring ansible-logging ansible-all-hardening
+        ansible-monitoring ansible-logging ansible-all-hardening \
+				python-init ansible-tracing ansible-postgresql ansible-mattermost
 
 pre-commit-init:
 	pre-commit install
@@ -17,6 +19,14 @@ define run_cmd
 	echo "\n----- Running $(1) on $(2)..."
 	cd $(2) && $(3)
 endef
+
+python-init:
+	@echo "Creating Python virtual environment..."
+	$(PYTHON) -m venv $(VENV)
+	@echo "Activating virtual environment..."
+	. $(VENV)/bin/activate
+	@echo "Installing Python dependencies..."
+	$(PIP) install -r requirements.txt
 
 tf-init:
 	@$(foreach dir,$(TF_BACKEND_DIRS),$(call run_cmd,tf init,$(dir),terraform init -backend-config=../backend.conf);)
@@ -41,11 +51,7 @@ ansible-test:
 	cd ansible && bash -c 'for s in molecule/*; do molecule test -s "$${s##*/}"; done'
 
 ansible-install:
-	cd ansible && \
-	ansible-galaxy collection install openstack.cloud && \
-	ansible-galaxy collection install community.general && \
-	ansible-galaxy collection install devsec.hardening && \
-	ansible-galaxy collection install community.postgresql
+	cd ansible && ansible-galaxy install -r requirements.yml 
 
 ansible-inventory:
 	cd ansible && ansible-inventory -i openstack.yml --list
