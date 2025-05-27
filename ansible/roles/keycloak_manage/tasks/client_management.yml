@@ -1,0 +1,35 @@
+- name: Create Keycloak Clients
+  become: false
+  delegate_to: localhost
+  community.general.keycloak_client:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ keycloak_url }}"
+    auth_realm: master
+    auth_username: "{{ keycloak_admin_user }}"
+    auth_password: "{{ keycloak_admin_user_password }}"
+    validate_certs: false
+    state: present
+    realm: '{{ keycloak_clients[item]["realm"] }}'
+    name: "{{ item }}"
+    client_id: '{{ keycloak_clients[item]["client_id"] }}'
+    description: '{{ keycloak_clients[item]["description"] }}'
+    enabled: true
+    client_authenticator_type: client-secret
+    secret: '{{ keycloak_clients[item]["client_secret"] }}'
+    service_accounts_enabled: true
+    standard_flow_enabled: true
+    implicit_flow_enabled: false
+    public_client: false
+    default_client_scopes:
+      - email
+      - offline_access
+      - profile
+      - roles
+    direct_access_grants_enabled: true
+    redirect_uris: '{{ keycloak_clients[item]["redirect_uris"] }}'
+    web_origins: '{{ keycloak_clients[item]["redirect_uris"] }}'
+    root_url: '{{ keycloak_clients[item]["client_url"] }}'
+    admin_url: '{{ keycloak_clients[item]["client_url"] }}'
+    base_url: '{{ keycloak_clients[item]["client_url"] }}'
+    protocol: openid-connect
+  run_once: true

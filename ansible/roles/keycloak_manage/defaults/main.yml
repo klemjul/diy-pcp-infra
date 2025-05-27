@@ -1,0 +1,7 @@
+---
+# defaults file for roles/keycloak_manage
+keycloak_admin_user:
+keycloak_admin_user_password:
+keycloak_url:
+keycloak_realms:
+keycloak_clients:

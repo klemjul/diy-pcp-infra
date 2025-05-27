@@ -6,3 +6,7 @@ postgresql_manage_keycloak_database:
 keycloak_admin_user_username:
 keycloak_admin_user_password:
 keycloak_keystore_secret:
+
+keycloak_ream:
+keycloak_grafana_client_id:
+keycloak_grafana_client_secret:

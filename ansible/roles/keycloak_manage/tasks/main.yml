@@ -1,0 +1,22 @@
+---
+# tasks file for roles/keycloak_manage
+- name: Create Keycloak Realms
+  become: false
+  delegate_to: localhost
+  community.general.keycloak_realm:
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ keycloak_url }}"
+    auth_realm: master
+    auth_username: "{{ keycloak_admin_user }}"
+    auth_password: "{{ keycloak_admin_user_password }}"
+    validate_certs: false
+    state: present
+    id: "{{ item }}"
+    realm: "{{ item }}"
+    enabled: true
+  run_once: true
+  loop: "{{ keycloak_realms }}"
+
+- name: Manage keycloak clients
+  ansible.builtin.include_tasks: client_management.yml
+  loop: "{{ keycloak_clients.keys() | list }}"

@@ -31,3 +31,28 @@
               "traefik.http.routers.router-keycloak.tls.certresolver=certs_gen",
             ],
         }
+
+- name: Install our keycloak Realm and Clients
+  hosts: meta-app_keycloak
+  roles:
+    - keycloak_manage
+  vars:
+    keycloak_admin_user: "{{ keycloak_admin_user_username }}"
+    keycloak_admin_user_password: "{{ keycloak_admin_user_password }}"
+    keycloak_url: "https://{{ keycloak_domain }}/auth/"
+    keycloak_realms:
+      - "{{ keycloak_ream }}"
+    keycloak_clients:
+      grafana:
+        realm: "{{ keycloak_ream }}"
+        client_id: "{{ keycloak_grafana_client_id }}"
+        client_secret: "{{ keycloak_grafana_client_secret }}"
+        redirect_uris:
+          - "https://{{ grafana_domain }}/*"
+          - "http://{{ grafana_domain }}/*"
+        client_url: "https://{{ grafana_domain }}"
+        description: "Client for grafana users"
+        client_roles:
+          - admin
+          - editor
+          - viewer
