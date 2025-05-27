@@ -78,3 +78,4 @@ Extra variables (`-e`) are configured using files in the git-ignored `ansible/en
 | [./ansible/pb_mattermost.yml](./ansible/pb_mattermost.yml)           | Configure Mattermost instance                                                       |
 | [./ansible/pb_tracing.yml](./ansible/pb_tracing.yml)                 | Configure Tempo backend instance                                                    |
 | [./ansible/pb_keycloak.yml](./ansible/pb_keycloak.yml)               | Configure Keycloak instance                                                         |
+| [./ansible/pb_gitlab.yml](./ansible/pb_gitlab.yml)                   | Configure Gitlab instance                                                           |
