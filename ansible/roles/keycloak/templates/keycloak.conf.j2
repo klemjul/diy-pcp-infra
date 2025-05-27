@@ -1,0 +1,34 @@
+# Basic settings for running in production. Change accordingly before deploying the server.
+
+# Database
+
+# The database vendor.
+db=postgres
+db-url-host={{ keycloak_database_host }}
+db-username={{ keycloak_database_user }}
+db-password={{ keycloak_database_password }}
+db-url-database={{ keycloak_database_db }}
+
+# Observability
+# If the server should expose metrics and healthcheck endpoints.
+metrics-enabled=true
+
+cache-config-file=/opt/keycloak/keycloak-{{ keycloak_version }}/conf/cache-ispn.xml
+
+# Do not attach route to cookies and rely on the session affinity capabilities from reverse proxy
+#spi-sticky-session-encoder-infinispan-should-attach-route=false
+
+# Hostname for the Keycloak server.
+#hostname= keycloak_config_url 
+
+hostname-url={{ keycloak_url }}
+hostname-admin-url={{ keycloak_url }}
+
+http-port=8080
+http-enabled=true
+http-relative-path=/auth
+http-host=0.0.0.0
+hostname-strict=false
+
+https-port=443
+https-key-store-password={{ keycloak_keystore_secret }}

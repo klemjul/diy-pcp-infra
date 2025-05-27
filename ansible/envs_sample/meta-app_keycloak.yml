@@ -3,6 +3,6 @@ postgresql_manage_keycloak_password:
 postgresql_manage_keycloak_username:
 postgresql_manage_keycloak_database:
 
-keycloak_admin_username:
-keycloak_admin_password:
+keycloak_admin_user_username:
+keycloak_admin_user_password:
 keycloak_keystore_secret:

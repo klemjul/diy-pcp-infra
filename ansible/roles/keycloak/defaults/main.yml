@@ -1,0 +1,13 @@
+---
+# defaults file for roles/keycloak
+keycloak_version: 24.0.3
+keycloak_java_package: openjdk-17-jre-headless
+keycloak_database_host:
+keycloak_database_user:
+keycloak_database_password:
+keycloak_database_db:
+keycloak_server_group:
+keycloak_admin_user:
+keycloak_admin_password:
+keycloak_keystore_secret:
+keycloak_url:

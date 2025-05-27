@@ -1,0 +1,33 @@
+- name: Install keycloak
+  become: yes
+  hosts: meta-app_keycloak
+  roles:
+    - keycloak
+    - consul/consul_services
+  vars:
+    keycloak_database_user: "{{ postgresql_manage_keycloak_username }}"
+    keycloak_database_password: "{{ postgresql_manage_keycloak_password }}"
+    keycloak_database_host: "postgresql_primary.service.consul"
+    keycloak_database_db: "{{ postgresql_manage_keycloak_database }}"
+    keycloak_server_group: "meta-app_keycloak"
+    keycloak_admin_user: "{{ keycloak_admin_user_username }}"
+    keycloak_admin_password: "{{ keycloak_admin_user_password }}"
+    keycloak_keystore_secret: "{{ keycloak_keystore_secret }}"
+    keycloak_url: "https://{{ keycloak_domain }}/auth/"
+    consul_services_list:
+      - {
+          name: "keycloak",
+          type: "tcp",
+          check_target: "127.0.0.1:8080",
+          interval: "10s",
+          port: 8080,
+          tags:
+            [
+              "traefik.enable=true",
+              "traefik.http.routers.router-keycloak.entrypoints=http,https",
+              "traefik.http.routers.router-keycloak.rule=Host(`{{ keycloak_domain }}`)",
+              "traefik.http.routers.router-keycloak.service=keycloak",
+              "traefik.http.routers.router-keycloak.middlewares=to_https@file",
+              "traefik.http.routers.router-keycloak.tls.certresolver=certs_gen",
+            ],
+        }
