@@ -1,0 +1,7 @@
+---
+# defaults file for roles/tempo
+tempo_version: 2.3.0
+tempo_dir_config: /etc/tempo
+tempo_dir_data: "/var/lib/tempo"
+tempo_dir_binary: /usr/local/bin/
+tempo_remote_write_metrics: ""

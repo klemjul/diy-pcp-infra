@@ -1,0 +1,20 @@
+- name: Tracing
+  become: yes
+  hosts: meta-app_tempo
+  roles:
+    - common/volumes
+    - tracing/tempo
+    - consul/consul_services
+  vars:
+    tempo_remote_write_metrics: "http://vmetrics.service.sandbox.consul:8428/api/v1/write"
+    tempo_dir_data: "/data/tempo"
+    volumes_disks:
+      - { disk: "/dev/sdb", path: "/data" }
+    consul_services_list:
+      - {
+          name: "tempo",
+          type: "http",
+          target: "http://127.0.0.1:3200/metrics",
+          interval: "10s",
+          port: 3100,
+        }

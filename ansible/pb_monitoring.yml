@@ -30,6 +30,12 @@
           address: "loki.service.consul:3100",
           uid: "loki",
         }
+      - {
+          name: "tempo",
+          type: "tempo",
+          address: "tempo.service.consul:3200",
+          uid: "tempo",
+        }
     grafana_dashboards:
       - {
           label: "node-exporter",

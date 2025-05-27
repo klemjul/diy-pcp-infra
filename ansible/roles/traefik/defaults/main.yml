@@ -12,3 +12,4 @@ traefik_tls_mail:
 # htpasswd for a basic auth middleware, must be defined in secret variables
 traefik_htpasswd:
 traefik_consul_datacenter: "sandbox"
+traefik_tracing_otlp_endpoint:
