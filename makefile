@@ -71,6 +71,7 @@ ansible-traefik: ansible-all-consul-services
 ansible-monitoring: ansible-all-consul-services
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
 	-e @./envs/sandbox/group_vars/domains.yml \
+	-e @./envs/sandbox/group_vars/meta-app_monitoring.yml \
 	-e @./envs/sandbox/group_vars/meta-app_keycloak.yml \
 	pb_monitoring.yml
 

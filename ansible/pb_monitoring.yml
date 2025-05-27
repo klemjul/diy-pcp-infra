@@ -108,7 +108,7 @@
               "traefik.http.routers.router-grafana.entrypoints=http,https",
               "traefik.http.routers.router-grafana.rule=Host(`{{ grafana_domain }}`)",
               "traefik.http.routers.router-grafana.service=grafana",
-              "traefik.http.routers.router-grafana.middlewares=auth@file,to_https@file,secure_headers@file",
+              "traefik.http.routers.router-grafana.middlewares=to_https@file,secure_headers@file",
               "traefik.http.routers.router-grafana.tls.certresolver=certs_gen",
             ],
         }

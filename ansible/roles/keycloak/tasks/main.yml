@@ -57,6 +57,7 @@
     group: keycloak
     mode: 0750
   notify: RESTART_KEYCLOAK
+  no_log: true
 
 - name: Add quarkus configuration
   ansible.builtin.template:
@@ -84,6 +85,7 @@
     group: root
     mode: 0750
   notify: RESTART_KEYCLOAK
+  no_log: true
 
 - name: Check if keystore already exists
   ansible.builtin.stat:
@@ -97,6 +99,7 @@
   tags:
     - skip_ansible_lint
   when: __keystore_exists.stat.exists == false
+  no_log: true
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
