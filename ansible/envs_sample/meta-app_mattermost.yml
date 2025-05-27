@@ -1,2 +1,5 @@
 ---
+postgresql_manage_mattermost_password:
+postgresql_manage_mattermost_username:
+postgresql_manage_mattermost_database:
 mattermost_database_connexion:

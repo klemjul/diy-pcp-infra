@@ -1,6 +1,5 @@
 ---
 postgresql_replication_repmgr_password:
-postgresql_manage_mattermost_password:
 
 backup_s3_uri:
 backup_s3_key:
