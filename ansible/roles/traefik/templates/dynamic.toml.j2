@@ -9,7 +9,8 @@
     [http.middlewares.auth.basicAuth]
       users = [
         "{{ traefik_htpasswd }}"
-      ] 
+      ]
+      removeHeader = true
     [http.middlewares.to_https.redirectScheme]
       scheme = "https"
       permanent = true
