@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -euo pipefail
+
+LOG={{ backup_log_dir }}/backup_{{ backup_app }}.log
+
+source /root/.config/restic/restic_{{ backup_app }}.creds
+
+echo $(date +"%Y-%m-%d.%H:%M:%S")" - Start Backups " | tee -a ${LOG}
+
+gitlab-backup create
+
+restic backup /var/opt/gitlab/backups
+
+echo $(date +"%Y-%m-%d.%H:%M:%S")" - Start - CleanS3" | tee -a ${LOG}
+
+restic forget --keep-last=14 \
+    --keep-within-daily=30d \
+    --keep-within-weekly=90d \
+    --keep-within-monthly=365d \
+    --group-by '' \
+    --prune
+
+echo $(date +"%Y-%m-%d.%H:%M:%S")" - End - CleanS3" | tee -a ${LOG}
+
+echo $(date +"%Y-%m-%d.%H:%M:%S")" - End Backups " | tee -a ${LOG}
+
+# how to restore dump
+# gitlab-backup restore

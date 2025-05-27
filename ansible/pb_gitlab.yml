@@ -52,3 +52,12 @@
               "traefik.http.routers.router-gitlab-registry.tls.certresolver=certs_gen",
             ],
         }
+
+- name: Gitlab backup
+  become: yes
+  hosts: meta-app_gitlab
+  roles:
+    - common/backup
+    - monitoring/metrics_task_times
+  vars:
+    backup_app: "gitlab"
