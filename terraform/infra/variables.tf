@@ -45,8 +45,34 @@ variable "loki_standalone_instance" {
   description = "If true, deploys Loki as a standalone instance. If false, deploys Loki in the monitoring instance."
 }
 
+variable "deploy_postgresql" {
+  type        = bool
+  default     = false
+  description = "If true, deploys Postgresql instance."
+}
+
 variable "deploy_mattermost" {
   type        = bool
   default     = false
   description = "If true, deploys Mattermost instance."
+  validation {
+    condition     = (var.deploy_postgresql == true && var.deploy_mattermost == true) || var.deploy_mattermost == false
+    error_message = "deploy_mattermost can be true only if postgresql instance if deployed"
+  }
+}
+
+variable "deploy_gitlab" {
+  type        = bool
+  default     = false
+  description = "If true, deploys Gitlab instance."
+}
+
+variable "deploy_keycloak" {
+  type        = bool
+  default     = false
+  description = "If true, deploys Keycloak instance."
+  validation {
+    condition     = (var.deploy_postgresql == true && var.deploy_keycloak == true) || var.deploy_keycloak == false
+    error_message = "deploy_gitlab can be true only if postgresql instance if deployed"
+  }
 }

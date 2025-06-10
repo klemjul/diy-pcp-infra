@@ -60,15 +60,19 @@ ansible-all: ansible-inventory
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all.yml
 
 ansible-consul: ansible-all
-	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_consul.yml pb_consul.yml
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
+	-e @./envs/sandbox/group_vars/meta-app_consul.yml \
+	pb_consul.yml
 
 ansible-all-consul-services: ansible-consul
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_all_consul_services.yml
 
 ansible-traefik: ansible-all-consul-services
-	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_traefik.yml pb_traefik.yml
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
+	-e @./envs/sandbox/group_vars/meta-app_traefik.yml \
+	pb_traefik.yml
 
-ansible-monitoring: ansible-all-consul-services
+ansible-monitoring: 
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
 	-e @./envs/sandbox/group_vars/domains.yml \
 	-e @./envs/sandbox/group_vars/meta-app_monitoring.yml \
@@ -89,10 +93,16 @@ ansible-postgresql: ansible-all-consul-services
 	pb_postgresql_ha.yml
 
 ansible-mattermost: ansible-postgresql
-	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_mattermost.yml -e @./envs/sandbox/group_vars/domains.yml pb_mattermost.yml
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \ 
+	-e @./envs/sandbox/group_vars/meta-app_mattermost.yml \
+	-e @./envs/sandbox/group_vars/domains.yml \
+	pb_mattermost.yml
 
 ansible-keycloak: ansible-postgresql
-	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml -e @./envs/sandbox/group_vars/meta-app_keycloak.yml -e @./envs/sandbox/group_vars/domains.yml pb_keycloak.yml
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
+	-e @./envs/sandbox/group_vars/meta-app_keycloak.yml \
+	-e @./envs/sandbox/group_vars/domains.yml \
+	pb_keycloak.yml
 
 ansible-gitlab: ansible-postgresql
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
