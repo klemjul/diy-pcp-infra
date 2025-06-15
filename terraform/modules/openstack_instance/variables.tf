@@ -10,6 +10,12 @@ variable "instance_network_external_id" {
   default     = null
 }
 
+variable "instance_network_port_allowed_addresses_pairs" {
+  type = list(string)
+  description = "Custom list of allowed addresses pairs to define on the network port"
+  default = []
+}
+
 variable "instance_name" {
   type = string
 }
