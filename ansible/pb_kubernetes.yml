@@ -1,0 +1,37 @@
+- name: Initialise the cluster on a first master node
+  hosts: diypcp-k8sm1
+  become: true
+  roles:
+    - consul/consul_services
+    - kubernetes/kubernetes
+  vars:
+    consul_services_list:
+      - {
+          name: "k8s-apiserver",
+          type: "tcp",
+          check_target: "127.0.0.1:6443",
+          interval: "10s",
+          port: 6443,
+        }
+- name: Install and join other masters
+  hosts: meta-app_k8sm,!diypcp-k8sm1
+  serial: 1
+  become: true
+  roles:
+    - consul/consul_services
+    - kubernetes/kubernetes
+  vars:
+    consul_services_list:
+      - {
+          name: "k8s-apiserver",
+          type: "tcp",
+          check_target: "127.0.0.1:6443",
+          interval: "10s",
+          port: 6443,
+        }
+- name: Install and join workers
+  hosts: meta-app_k8sw
+  become: true
+  serial: 10
+  roles:
+    - kubernetes/kubernetes
