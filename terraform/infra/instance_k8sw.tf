@@ -14,6 +14,8 @@ module "k8sw" {
   instance_image_id            = var.instance_image_id
   instance_flavor_name        = "a2-ram4-disk20-perf1"
 
+  instance_network_port_allowed_addresses_pairs = ["10.200.0.0/16","10.201.0.0/16"]
+
   metadatas                   = {
     project = var.project_prefix,
     app         = "k8sw"
