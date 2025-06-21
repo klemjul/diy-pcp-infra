@@ -72,7 +72,7 @@ ansible-traefik: ansible-all-consul-services
 	-e @./envs/sandbox/group_vars/meta-app_traefik.yml \
 	pb_traefik.yml
 
-ansible-monitoring: 
+ansible-monitoring: ansible-all-consul-services
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
 	-e @./envs/sandbox/group_vars/domains.yml \
 	-e @./envs/sandbox/group_vars/meta-app_monitoring.yml \

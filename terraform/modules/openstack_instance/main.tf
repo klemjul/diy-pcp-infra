@@ -28,7 +28,7 @@ resource "openstack_networking_port_v2" "internal_port" {
   security_group_ids = local.secgroup_list
   fixed_ip   {
     subnet_id = data.openstack_networking_subnet_v2.internal_subnet.id 
-    ip_address = var.instance_internal_fixed_ip == "" ? "" : "${var.instance_internal_fixed_ip}${count.index + 1}"
+    ip_address = var.instance_internal_fixed_ip != null ? "${var.instance_internal_fixed_ip}${count.index + 1}" : ""
   }
   dynamic "allowed_address_pairs" {
     for_each = length(var.instance_network_port_allowed_addresses_pairs) == 0 ? [] : var.instance_network_port_allowed_addresses_pairs
