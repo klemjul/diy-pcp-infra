@@ -35,3 +35,9 @@
   serial: 10
   roles:
     - kubernetes/kubernetes
+
+- name: Install kubernetes tooling
+  hosts: diypcp-k8sm1
+  become: true
+  roles:
+    - kubernetes/kubernetes_tooling
