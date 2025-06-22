@@ -3,6 +3,41 @@ data "openstack_networking_subnet_ids_v2" "ext_subnets" {
   network_id = var.instance_network_external_id
 }
 
+data "openstack_networking_network_v2" "internal_network" {
+  network_id = var.instance_network_internal_id
+}
+
+data "openstack_networking_secgroup_v2" "sg" {
+  for_each = toset(var.instance_security_groups)
+  name     = each.key
+}
+
+locals {
+  secgroup_list = [for sg in data.openstack_networking_secgroup_v2.sg : sg.id]
+}
+
+data "openstack_networking_subnet_v2" "internal_subnet" {
+  network_id = var.instance_network_internal_id
+}
+
+resource "openstack_networking_port_v2" "internal_port" {
+  count                 = var.instance_count
+  name                  = "internal-${var.instance_name}${count.index + 1}"
+  network_id            = data.openstack_networking_network_v2.internal_network.id
+  port_security_enabled = true
+  security_group_ids    = local.secgroup_list
+  fixed_ip {
+    subnet_id  = data.openstack_networking_subnet_v2.internal_subnet.id
+    ip_address = var.instance_internal_fixed_ip != null ? "${var.instance_internal_fixed_ip}${count.index + 1}" : ""
+  }
+  dynamic "allowed_address_pairs" {
+    for_each = length(var.instance_network_port_allowed_addresses_pairs) == 0 ? [] : var.instance_network_port_allowed_addresses_pairs
+    content {
+      ip_address = allowed_address_pairs.value
+    }
+  }
+}
+
 resource "openstack_compute_instance_v2" "instance" {
   count           = var.instance_count
   name            = "${var.instance_name}${count.index + 1}"
@@ -17,9 +52,9 @@ resource "openstack_compute_instance_v2" "instance" {
     instance_default_user               = var.instance_default_user
   })
   network {
-    uuid        = var.instance_network_internal_id
-    fixed_ip_v4 = var.instance_internal_fixed_ip != null ? "${var.instance_internal_fixed_ip}${count.index + 1}" : null
+    port = openstack_networking_port_v2.internal_port[count.index].id
   }
+  depends_on = [openstack_networking_port_v2.internal_port]
 }
 
 resource "openstack_networking_floatingip_v2" "random_public_fip" {

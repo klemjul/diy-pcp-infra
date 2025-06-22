@@ -17,6 +17,39 @@ variable "network_subnet_cidr" {
   default = "10.0.1.0/24"
 }
 
+variable "network_static_routes" {
+  type = list(object({
+    destination_cidr : string,
+    next_hop : string
+  }))
+  default = [
+    {
+      destination_cidr = "10.200.0.0/16"
+      next_hop         = "10.0.1.101"
+    },
+    {
+      destination_cidr = "10.200.0.0/16"
+      next_hop         = "10.0.1.102"
+    },
+    {
+      destination_cidr = "10.200.0.0/16"
+      next_hop         = "10.0.1.103"
+    },
+    {
+      destination_cidr = "10.201.0.0/16"
+      next_hop         = "10.0.1.101"
+    },
+    {
+      destination_cidr = "10.201.0.0/16"
+      next_hop         = "10.0.1.102"
+    },
+    {
+      destination_cidr = "10.201.0.0/16"
+      next_hop         = "10.0.1.103"
+    }
+  ]
+}
+
 variable "project_prefix" {
   type        = string
   default     = "diypcp"
@@ -46,4 +79,14 @@ variable "instance_default_user" {
   type        = string
   description = "default user"
   default     = "clouduser"
+}
+
+variable "sg_k8s_internal_pods_network_cidr" {
+  type    = string
+  default = "10.200.0.0/16"
+}
+
+variable "sg_k8s_internal_services_network_cidr" {
+  type    = string
+  default = "10.201.0.0/16"
 }

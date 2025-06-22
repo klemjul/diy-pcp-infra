@@ -1,4 +1,6 @@
 module "postgresql" {
+  count = var.deploy_postgresql ? 1 : 0
+
   source                       = "../modules/openstack_instance"
   instance_count               = 2
   instance_name                = "${var.project_prefix}-postgresql"

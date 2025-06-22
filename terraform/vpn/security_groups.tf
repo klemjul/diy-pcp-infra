@@ -190,3 +190,40 @@ resource "openstack_networking_secgroup_rule_v2" "sg_rule_node_exporter" {
   remote_ip_prefix  = var.network_subnet_cidr
   security_group_id = openstack_networking_secgroup_v2.sg_node_exporter.id
 }
+
+
+resource "openstack_networking_secgroup_v2" "sg_k8s_internal_pods" {
+  name        = "${var.project_prefix}-k8s-internal-pods"
+  description = "allow all tcp port  kubernetes internal network"
+}
+
+resource "openstack_networking_secgroup_rule_v2" "sg_rule_k8s_internal_pods_tcp" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 1
+  port_range_max    = 65535
+  remote_ip_prefix  = var.sg_k8s_internal_pods_network_cidr
+  security_group_id = openstack_networking_secgroup_v2.sg_k8s_internal_pods.id
+  lifecycle {
+    ignore_changes = [port_range_min, port_range_max]
+  }
+}
+
+resource "openstack_networking_secgroup_v2" "sg_k8s_internal_services" {
+  name        = "${var.project_prefix}-k8s-internal-services"
+  description = "k8s_internal_services"
+}
+
+resource "openstack_networking_secgroup_rule_v2" "sg_rule_k8s_internal_services_tcp" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 1
+  port_range_max    = 65535
+  remote_ip_prefix  = var.sg_k8s_internal_services_network_cidr
+  security_group_id = openstack_networking_secgroup_v2.sg_k8s_internal_services.id
+  lifecycle {
+    ignore_changes = [port_range_min, port_range_max]
+  }
+}
