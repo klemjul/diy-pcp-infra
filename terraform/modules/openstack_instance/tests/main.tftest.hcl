@@ -62,7 +62,7 @@ run "should_create_simple_instance" {
   }
 
   assert {
-    condition     = resource.openstack_compute_instance_v2.instance[0].network[0].uuid == var.instance_network_internal_id
+    condition     = resource.openstack_compute_instance_v2.instance[0].network[0].port == resource.openstack_networking_port_v2.internal_port[0].id
     error_message = "instance must be associated with the internal network"
   }
 
@@ -153,8 +153,8 @@ run "should_create_instance_with_fixed_internal_ip" {
 
   assert {
     condition = (
-      resource.openstack_compute_instance_v2.instance[0].network[0].fixed_ip_v4 == "0.0.0.101" &&
-      resource.openstack_compute_instance_v2.instance[1].network[0].fixed_ip_v4 == "0.0.0.102"
+      resource.openstack_networking_port_v2.internal_port[0].fixed_ip[0].ip_address == "0.0.0.101" &&
+      resource.openstack_networking_port_v2.internal_port[1].fixed_ip[0].ip_address == "0.0.0.102"
     )
     error_message = "instances must be associated with the fixed internal IP"
   }

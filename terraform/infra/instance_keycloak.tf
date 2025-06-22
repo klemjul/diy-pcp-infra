@@ -1,5 +1,5 @@
 module "keycloak" {
-  count             = var.deploy_keycloak ? 1 : 0
+  count = var.deploy_keycloak ? 1 : 0
 
   source            = "../modules/openstack_instance"
   instance_count    = 2

@@ -1,7 +1,7 @@
 module "gitlab" {
-  count             = var.deploy_gitlab ? 1 : 0
+  count = var.deploy_gitlab ? 1 : 0
 
-  source            = "../modules/openstack_instance"
+  source = "../modules/openstack_instance"
 
   instance_count    = 1
   instance_name     = "${var.project_prefix}-gitlab"

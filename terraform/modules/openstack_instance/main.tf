@@ -9,11 +9,11 @@ data "openstack_networking_network_v2" "internal_network" {
 
 data "openstack_networking_secgroup_v2" "sg" {
   for_each = toset(var.instance_security_groups)
-  name = "${each.key}"
+  name     = each.key
 }
 
 locals {
-  secgroup_list = [ for sg in data.openstack_networking_secgroup_v2.sg: sg.id ]
+  secgroup_list = [for sg in data.openstack_networking_secgroup_v2.sg : sg.id]
 }
 
 data "openstack_networking_subnet_v2" "internal_subnet" {
@@ -21,13 +21,13 @@ data "openstack_networking_subnet_v2" "internal_subnet" {
 }
 
 resource "openstack_networking_port_v2" "internal_port" {
-  count      = var.instance_count
-  name       = "internal-${var.instance_name}${count.index + 1}"
-  network_id = data.openstack_networking_network_v2.internal_network.id
+  count                 = var.instance_count
+  name                  = "internal-${var.instance_name}${count.index + 1}"
+  network_id            = data.openstack_networking_network_v2.internal_network.id
   port_security_enabled = true
-  security_group_ids = local.secgroup_list
-  fixed_ip   {
-    subnet_id = data.openstack_networking_subnet_v2.internal_subnet.id 
+  security_group_ids    = local.secgroup_list
+  fixed_ip {
+    subnet_id  = data.openstack_networking_subnet_v2.internal_subnet.id
     ip_address = var.instance_internal_fixed_ip != null ? "${var.instance_internal_fixed_ip}${count.index + 1}" : ""
   }
   dynamic "allowed_address_pairs" {
@@ -54,7 +54,7 @@ resource "openstack_compute_instance_v2" "instance" {
   network {
     port = openstack_networking_port_v2.internal_port[count.index].id
   }
-  depends_on = [ openstack_networking_port_v2.internal_port ]
+  depends_on = [openstack_networking_port_v2.internal_port]
 }
 
 resource "openstack_networking_floatingip_v2" "random_public_fip" {
