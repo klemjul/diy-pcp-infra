@@ -177,3 +177,19 @@ run "should_create_instance_with_sudo_password" {
     error_message = "cloudinit: sudo password must be set to var.instance_default_user_password_hash"
   }
 }
+
+run "should_associate_allowed_address_pairs_on_network_port" {
+  command = apply
+
+  variables {
+    instance_network_port_allowed_addresses_pairs = ["10.200.0.0/16", "10.201.0.0/16"]
+  }
+
+  assert {
+    condition = (
+      contains([for pair in resource.openstack_networking_port_v2.internal_port[0].allowed_address_pairs : pair.ip_address], "10.200.0.0/16") &&
+      contains([for pair in resource.openstack_networking_port_v2.internal_port[0].allowed_address_pairs : pair.ip_address], "10.201.0.0/16")
+    )
+    error_message = "network port must have allowed address pairs set"
+  }
+}
