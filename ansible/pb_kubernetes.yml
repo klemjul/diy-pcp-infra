@@ -41,3 +41,29 @@
   become: true
   roles:
     - kubernetes/kubernetes_tooling
+
+- name: Get node ip and their PodCidr
+  hosts: diypcp-k8sm1
+  become: yes
+  tasks:
+    - name: Execute kubectl
+      ansible.builtin.shell: kubectl get nodes -o jsonpath='{range .items[*]}{.spec.podCIDR} {.status.addresses[?(@.type=="InternalIP")].address}{"\n"}{end}'
+      register: __kubectl_routes_output
+      changed_when: true
+
+    - name: Définir un fact personnalisé pour les routes
+      ansible.builtin.set_fact:
+        node_routes: "{{ __kubectl_routes_output.stdout_lines | map('split', ' ') | map('join', ',gateway=') }}"
+
+    - name: Afficher les routes générées
+      ansible.builtin.debug:
+        var: node_routes
+
+- name: Run locally the openstack command
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Add k8s routes to our router
+      ansible.builtin.command: openstack router add route --route destination={{ item }} diypcp-rt1
+      with_items: "{{ hostvars['diypcp-k8sm1']['node_routes'] }}"
+      changed_when: true
