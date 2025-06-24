@@ -57,6 +57,14 @@
   loop_control:
     loop_var: lines
 
+- name: "Additional routes lines - {{ item }}"
+  ansible.builtin.lineinfile:
+    dest: "{{ ansible_env.HOME }}/openvpn-ca/{{ item }}/{{ item }}.ovpn"
+    line: "route {{ target_cidr_routes.cidr }} {{ target_cidr_routes.mask }}"
+  loop: "{{ vpn_additional_routes }}"
+  loop_control:
+    loop_var: target_cidr_routes
+
 - name: "Add client certificates and keys to client config - {{ item }}"
   ansible.builtin.shell: "{{ item }}"
   args:

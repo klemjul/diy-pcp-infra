@@ -1,0 +1,26 @@
+- name: Install helm if not exists
+  ansible.builtin.unarchive:
+    src: "https://get.helm.sh/helm-v{{ kubernetes_tooling_helm_version }}-linux-amd64.tar.gz"
+    dest: /usr/local/bin
+    extra_opts: "--strip-components=1"
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true
+  args:
+    creates: /usr/local/bin/helm
+
+- name: Add stable chart repo
+  kubernetes.core.helm_repository:
+    name: hashicorp
+    repo_url: "https://helm.releases.hashicorp.com"
+
+# https://developer.hashicorp.com/consul/docs/reference/k8s/helm
+- name: Deploy consul sync
+  kubernetes.core.helm:
+    name: consul
+    chart_ref: hashicorp/consul
+    chart_version: 0.45.0
+    release_namespace: sre
+    create_namespace: true
+    values: "{{ lookup('template', 'consulsync-values.yml.j2') | from_yaml }}"

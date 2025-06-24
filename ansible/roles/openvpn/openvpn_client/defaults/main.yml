@@ -3,3 +3,6 @@
 openvpn_client_user_list:
   - user1
 openvpn_client_destination_key: "/tmp/"
+vpn_additional_routes:
+  - { cidr: "10.201.0.0", mask: "255.255.0.0" }
+  - { cidr: "10.200.0.0", mask: "255.255.0.0" }
