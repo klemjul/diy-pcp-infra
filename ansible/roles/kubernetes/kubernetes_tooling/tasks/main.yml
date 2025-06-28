@@ -20,6 +20,3 @@
 
 - name: Deploy cinder-csi
   ansible.builtin.include_tasks: cinder_csi.yml
-
-- name: Deploy prometheus-stack
-  ansible.builtin.include_tasks: prometheus_stack.yml
