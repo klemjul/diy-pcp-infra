@@ -76,3 +76,12 @@ variable "deploy_keycloak" {
     error_message = "deploy_gitlab can be true only if postgresql instance if deployed"
   }
 }
+variable "deploy_kubernetes" {
+  type        = string
+  default     = "simple"
+  description = "Specifies Kubernetes deployment type: 'simple', or 'cluster'."
+  validation {
+    condition     = contains(["simple", "cluster"], var.deploy_kubernetes)
+    error_message = "deploy_kubernetes must be one of: 'simple', or 'cluster'."
+  }
+}
