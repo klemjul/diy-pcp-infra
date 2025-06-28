@@ -1,0 +1,16 @@
+grafana:
+  enabled: true
+prometheus:
+  enabled: true
+  prometheusSpec:
+    retention: {{ kubernetes_helm_prometheus_stack_retention }}
+    replicas: {{ kubernetes_helm_prometheus_prom_replicas }}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: {{ kubernetes_helm_prometheus_stack_sc }}
+          resources:
+            requests:
+              storage: {{ kubernetes_helm_prometheus_stack_storage_size }}
+nodeExporter:
+  enabled: false

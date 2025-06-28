@@ -1,2 +1,16 @@
 kubernetes_tooling_helm_version: 3.13.3
 kubernetes_tooling_consul_datacenter: "sandbox"
+
+kubernetes_openstack_username: ""
+kubernetes_openstack_password: ""
+kubernetes_openstack_domain_name: "default"
+kubernetes_openstack_auth_url: "https://api.pub1.infomaniak.cloud/identity"
+kubernetes_openstack_tenant_id: ""
+kubernetes_openstack_region: ""
+kubernetes_helm_consulsync_version: "0.45.0"
+kubernetes_helm_cinder_version: "2.30.0"
+kubernetes_helm_prometheus_stack_version: "62.3.1"
+kubernetes_helm_prometheus_stack_retention: "4h"
+kubernetes_helm_prometheus_stack_sc: "csi-cinder-sc-delete"
+kubernetes_helm_prometheus_stack_storage_size: "20Gi"
+kubernetes_helm_prometheus_prom_replicas: 2
