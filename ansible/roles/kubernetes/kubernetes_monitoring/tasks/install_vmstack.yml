@@ -1,0 +1,23 @@
+- name: Prerequisites
+  ansible.builtin.apt:
+    name: python3-kubernetes
+    state: present
+
+- name: Add stable chart repo
+  kubernetes.core.helm_repository:
+    name: vm
+    repo_url: "https://victoriametrics.github.io/helm-charts/"
+
+- name: Deploy victoriametrics operator
+  kubernetes.core.helm:
+    name: vmoperator
+    chart_ref: vm/victoria-metrics-operator
+    chart_version: "{{ kubernetes_monitoring_vmoperator_stack_version }}"
+    release_namespace: kube-vmetrics
+    create_namespace: true
+    wait: True
+
+- name: Deploy VMCluster
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'vmcluster.yml.j2') | from_yaml }}"
