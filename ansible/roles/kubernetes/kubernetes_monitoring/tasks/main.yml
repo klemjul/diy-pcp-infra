@@ -1,0 +1,13 @@
+- name: Add stable chart repo
+  kubernetes.core.helm_repository:
+    name: prometheus
+    repo_url: "https://prometheus-community.github.io/helm-charts"
+
+- name: Deploy prometheus stack
+  kubernetes.core.helm:
+    name: kube-prometheus-stack
+    chart_ref: prometheus/kube-prometheus-stack
+    chart_version: "{{ kubernetes_monitoring_stack_version }}"
+    release_namespace: monitoring
+    create_namespace: true
+    values: "{{ lookup('template', 'prometheus-stack-values.yml.j2') | from_yaml }}"

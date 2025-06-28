@@ -1,0 +1,8 @@
+kubernetes_monitoring_stack_version: "62.3.1"
+kubernetes_monitoring_stack_retention: "4h"
+kubernetes_monitoring_stack_sc: "csi-cinder-sc-delete"
+kubernetes_monitoring_stack_storage_size: "20Gi"
+kubernetes_monitoring_prom_replicas: 2
+kubernetes_monitoring_prom_remote_write: http://vmetrics.service.consul:8428/api/v1/write
+kubernetes_monitoring_grafana_ds_vmetrics_url: http://vmetrics.service.consul:8428
+kubernetes_monitoring_grafana_domain:

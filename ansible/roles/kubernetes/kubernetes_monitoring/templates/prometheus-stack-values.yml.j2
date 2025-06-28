@@ -1,0 +1,43 @@
+grafana:
+  enabled: true
+  additionalDataSources:
+  - name: VictoriaMetrics
+    url: {{ kubernetes_monitoring_grafana_ds_vmetrics_url }}
+    type: prometheus
+    access: proxy
+    isDefault: true
+  deleteDatasources: 
+  - name: Prometheus
+    orgId: 1
+  sidecar:
+    datasources:
+      enabled: true
+      defaultDatasourceEnabled: false
+  service:
+    annotations:
+      consul.hashicorp.com/service-name: graf
+      consul.hashicorp.com/service-sync: "true"
+      consul.hashicorp.com/service-tags: |
+        traefik.enable=true,
+        traefik.http.routers.router-graf.entrypoints=http\,https,
+        traefik.http.routers.router-graf.rule=Host(`{{ kubernetes_monitoring_grafana_domain }}`),
+        traefik.http.routers.router-graf.service=graf,
+        traefik.http.routers.router-graf.middlewares=secure_headers@file\,to_https@file,
+        traefik.http.routers.router-graf.tls.certresolver=certs_gen
+prometheus:
+  enabled: true
+  prometheusSpec:
+    remoteWrite:
+      - url: {{ kubernetes_monitoring_prom_remote_write }}
+    retention: {{ kubernetes_monitoring_stack_retention }}
+    replicas: {{ kubernetes_monitoring_prom_replicas }}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: {{ kubernetes_monitoring_stack_sc }}
+          resources:
+            requests:
+              storage: {{ kubernetes_monitoring_stack_storage_size }}
+nodeExporter:
+  enabled: false
+

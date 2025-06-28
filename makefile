@@ -83,6 +83,11 @@ ansible-k8s: ansible-all-consul-services
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
 	pb_kubernetes.yml
 
+ansible-k8s-apps:
+	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml \
+	-e @./envs/sandbox/group_vars/domains.yml \
+	pb_kubernetes_apps.yml
+
 ansible-logging: ansible-monitoring
 	cd ansible && ANSIBLE_CONFIG=ansible.cfg ansible-playbook -u clouduser -i openstack.yml pb_logging.yml
 

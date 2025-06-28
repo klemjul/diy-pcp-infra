@@ -1,0 +1,7 @@
+- name: Install kubernetes monitoring
+  hosts: diypcp-k8sm1
+  become: true
+  roles:
+    - kubernetes/kubernetes_monitoring
+  vars:
+    kubernetes_monitoring_grafana_domain: "{{ kgrafana_domain }}"
