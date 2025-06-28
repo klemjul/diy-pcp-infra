@@ -1,6 +1,6 @@
 module "k8sm" {
   source            = "../modules/openstack_instance"
-  instance_count    = var.deploy_kubernetes == "simple" ? 1 : 3
+  instance_count    = var.kubernetes_master_count
   instance_name     = "${var.project_prefix}-k8sm"
   instance_key_pair = "${var.project_prefix}-key-service-account"
   instance_security_groups = [

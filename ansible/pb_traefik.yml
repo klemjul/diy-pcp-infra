@@ -9,7 +9,8 @@
   vars:
     vector_specifics_list: ["traefik"]
     traefik_consul_catalog: "consul.service.sandbox.consul:8500"
-    traefik_tracing_otlp_endpoint: "http://tempo.service.sandbox.consul:4318/v1/traces"
+    # Uncomment the following line when deployed with tracing solution like tempo
+    # traefik_tracing_otlp_endpoint: "http://tempo.service.sandbox.consul:4318/v1/traces"
     consul_services_list:
       - {
           name: "traefik_dashboard",

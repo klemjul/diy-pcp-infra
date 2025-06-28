@@ -16,7 +16,7 @@
     vmtools_vmalert_remote: vmetrics.service.sandbox.consul
     vmtools_vmalert_grafana: grafana.service.sandbox.consul
     karma_alertmanager_uri: "http://alertmanager.service.sandbox.consul:9093"
-    # Uncomment the following line deployed with oauth solution like keycloak
+    # Uncomment the following line when deployed with oauth solution like keycloak
     # grafana_oauth_enabled: true
     grafana_prometheus_address: "vmetrics.service.sandbox.consul:8428"
     grafana_datasources:
@@ -32,12 +32,13 @@
           address: "loki.service.consul:3100",
           uid: "loki",
         }
-      - {
-          name: "tempo",
-          type: "tempo",
-          address: "tempo.service.consul:3200",
-          uid: "tempo",
-        }
+      # Uncomment the following lines when deployed with tempo
+      # - {
+      #     name: "tempo",
+      #     type: "tempo",
+      #     address: "tempo.service.consul:3200",
+      #     uid: "tempo",
+      #   }
     grafana_dashboards:
       - {
           label: "node-exporter",
