@@ -1,7 +1,7 @@
 
 module "monitoring" {
   source            = "../modules/openstack_instance"
-  instance_count    = 1
+  instance_count    = var.deploy_monitoring ? 1 : 0
   instance_name     = "${var.project_prefix}-monitoring"
   instance_key_pair = "${var.project_prefix}-key-service-account"
   instance_security_groups = [

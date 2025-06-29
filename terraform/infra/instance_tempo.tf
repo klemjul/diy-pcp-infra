@@ -1,6 +1,6 @@
 module "tempo" {
   source            = "../modules/openstack_instance"
-  instance_count    = 1
+  instance_count    = var.deploy_tempo ? 1 : 0
   instance_name     = "${var.project_prefix}-tempo"
   instance_key_pair = "${var.project_prefix}-key-service-account"
   instance_security_groups = [

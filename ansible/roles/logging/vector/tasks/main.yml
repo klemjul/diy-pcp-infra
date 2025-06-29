@@ -68,24 +68,24 @@
 - name: Add vector generic pipelines
   ansible.builtin.template:
     src: "{{ item }}"
-    dest: "/etc/vector/{{ item | basename }}"
+    dest: "/etc/vector/{{ item | basename | replace('.j2', '') }}"
     owner: vector
     group: vector
     mode: 0750
   with_fileglob:
-    - templates/generic/*.yaml
+    - templates/generic/*.yaml.j2
   notify: Restart_vector
 
 - name: Add vector traefik pipelines
   ansible.builtin.template:
     src: "{{ item }}"
-    dest: "/etc/vector/{{ item | basename }}"
+    dest: "/etc/vector/{{ item | basename | replace('.j2', '') }}"
     owner: vector
     group: vector
     mode: 0750
   with_fileglob:
-    - templates/specifics/*.yaml
-  when: item | basename | replace('.yaml','') in vector_specifics_list
+    - templates/specifics/*.yaml.j2
+  when: (item | basename | replace('.yaml.j2', '')) in vector_specifics_list
   notify: Restart_vector
 
 - name: Start vector

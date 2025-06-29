@@ -1,0 +1,9 @@
+# https://developer.hashicorp.com/consul/docs/reference/k8s/helm
+- name: Deploy consul sync
+  kubernetes.core.helm:
+    name: consul
+    chart_ref: hashicorp/consul
+    chart_version: "{{ kubernetes_tooling_helm_consulsync_version }}"
+    release_namespace: sre
+    create_namespace: true
+    values: "{{ lookup('template', 'consulsync-values.yml.j2') | from_yaml }}"

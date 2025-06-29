@@ -8,7 +8,7 @@ syncCatalog:
   syncClusterIPServices: true
   toConsul: true
   toK8S: false
-  k8sAllowNamespaces: ['default']
+  k8sAllowNamespaces: {{ kubernetes_tooling_helm_consulsync_namespaces | to_json }}
   securityContext:
     runAsNonRoot: false
 client:

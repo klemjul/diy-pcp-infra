@@ -1,0 +1,13 @@
+- name: Prerequisites
+  ansible.builtin.apt:
+    name: python3-kubernetes
+    state: present
+
+- name: Install prometheus-stack
+  ansible.builtin.include_tasks: install_promstack.yml
+
+- name: Install victoriametrics cluster
+  ansible.builtin.include_tasks: install_vmstack.yml
+
+- name: Install consul exporter
+  ansible.builtin.include_tasks: install_consul_exporter.yml

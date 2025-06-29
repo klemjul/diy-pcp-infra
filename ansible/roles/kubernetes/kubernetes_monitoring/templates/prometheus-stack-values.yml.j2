@@ -1,0 +1,143 @@
+grafana:
+  enabled: true
+  env:
+    GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: "victoriametrics-logs-datasource"
+  plugins:
+    - https://github.com/VictoriaMetrics/victorialogs-datasource/releases/download/v0.18.1/victoriametrics-logs-datasource-v0.18.1.zip;victoriametrics-logs-datasource
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: 'default'
+          type: file
+          disableDeletion: true
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+  dashboards:
+    default:
+      node-exporter:
+        datasource: vmetrics
+        url: https://raw.githubusercontent.com/rfrail3/grafana-dashboards/master/prometheus/node-exporter-full.json
+  additionalDataSources:
+  - name: vmetrics
+    url: {{ kubernetes_monitoring_grafana_ds_vmetrics_url }}
+    type: prometheus
+    access: proxy
+    isDefault: true
+  - name: vlogs
+    url: {{ kubernetes_monitoring_grafana_ds_vlogs_url}}
+    type: victoriametrics-logs-datasource
+    access: proxy
+    isDefault: false
+  deleteDatasources: 
+  - name: Prometheus
+    orgId: 1
+  sidecar:
+    datasources:
+      enabled: true
+      defaultDatasourceEnabled: false
+  service:
+    annotations:
+      consul.hashicorp.com/service-name: graf
+      consul.hashicorp.com/service-sync: "true"
+      consul.hashicorp.com/service-tags: |
+        traefik.enable=true,
+        traefik.http.routers.router-graf.entrypoints=http\,https,
+        traefik.http.routers.router-graf.rule=Host(`{{ kubernetes_monitoring_grafana_domain }}`),
+        traefik.http.routers.router-graf.service=graf,
+        traefik.http.routers.router-graf.middlewares=secure_headers@file\,to_https@file,
+        traefik.http.routers.router-graf.tls.certresolver=certs_gen
+prometheus:
+  enabled: true
+  prometheusSpec:
+    remoteWrite:
+      - url: {{ kubernetes_monitoring_prom_remote_write }}
+    retention: {{ kubernetes_monitoring_stack_retention }}
+    replicas: {{ kubernetes_monitoring_prom_replicas }}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: {{ kubernetes_monitoring_stack_sc }}
+          resources:
+            requests:
+              storage: {{ kubernetes_monitoring_stack_storage_size }}
+    additionalScrapeConfigs:
+      - job_name: node_exporter
+        consul_sd_configs:
+        - server: 'consul.service.consul:8500'
+          services:
+          - 'node_exporter'
+        relabel_configs:
+        - source_labels: ['__meta_consul_address']
+          regex:         '(.*)'
+          target_label:  '__address__'
+          replacement:   '${1}:9100'
+        - source_labels: [__meta_consul_node]
+          target_label: instance
+
+      - job_name: traefik_metrics
+        consul_sd_configs:
+        - server: 'consul.service.consul:8500'
+          services:
+          - 'traefik_metrics'
+        relabel_configs:
+        - source_labels: ['__meta_consul_address']
+          regex:         '(.*)'
+          target_label:  '__address__'
+          replacement:   '${1}:9200'
+        - source_labels: [__meta_consul_node]
+          target_label: instance
+
+      - job_name: consul
+        consul_sd_configs:
+        - server: 'consul.service.consul:8500'
+          services:
+          - 'consul'
+        metrics_path: '/v1/agent/metrics'
+        scheme: http
+        relabel_configs:
+        - source_labels: ['__meta_consul_address']
+          regex:         '(.*)'
+          target_label:  '__address__'
+          replacement:   '${1}:8500'
+        - source_labels: [__meta_consul_node]
+          target_label: instance
+
+      - job_name: consul_exporter
+        consul_sd_configs:
+        - server: 'consul.service.consul:8500'
+          services:
+          - 'consul_exporter'
+        relabel_configs:
+        - source_labels: ['__meta_consul_address']
+          regex:         '(.*)'
+          target_label:  '__address__'
+          replacement:   '${1}:9107'
+        - source_labels: [__meta_consul_node]
+          target_label: instance
+
+      - job_name: postgresql_exporter
+        consul_sd_configs:
+        - server: 'consul.service.consul:8500'
+          services:
+          - 'postgresql'
+        relabel_configs:
+        - source_labels: ['__meta_consul_address']
+          regex:         '(.*)'
+          target_label:  '__address__'
+          replacement:   '${1}:9187'
+        - source_labels: [__meta_consul_node]
+          target_label: instance
+nodeExporter:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeProxy:
+  enabled: false

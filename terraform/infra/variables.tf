@@ -76,3 +76,24 @@ variable "deploy_keycloak" {
     error_message = "deploy_gitlab can be true only if postgresql instance if deployed"
   }
 }
+variable "kubernetes_worker_count" {
+  type    = number
+  default = 2
+}
+
+variable "kubernetes_master_count" {
+  type    = number
+  default = 1
+}
+
+variable "deploy_tempo" {
+  type        = bool
+  default     = false
+  description = "If true, deploys Tempo instance."
+}
+
+variable "deploy_monitoring" {
+  type        = bool
+  default     = false
+  description = "If true, deploys monitoring instance."
+}

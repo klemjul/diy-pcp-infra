@@ -19,13 +19,13 @@ transforms:
     inputs:
       - traefik
     source: |-
-      . = parse_json!(.message)
+      . = .message
   tr_traefik_access_logs:
     type: remap
     inputs:
       - traefik_access
     source: |-
-      . = parse_json!(.message)
+      . = .
 sinks:
   loki_traefik_logs:
     type: loki
@@ -35,6 +35,10 @@ sinks:
     inputs:
       - tr_traefik_logs
     endpoint: http://{{ vector_loki_endpoint }}
+{% if vector_loki_path != "" %}
+    path: "{{ vector_loki_path }}"
+    compression: gzip
+{% endif %}
     encoding:
       codec: "json"
     healthcheck:
@@ -47,6 +51,10 @@ sinks:
     inputs:
       - tr_traefik_access_logs
     endpoint: http://{{ vector_loki_endpoint }}
+{% if vector_loki_path != "" %}
+    path: "{{ vector_loki_path }}"
+    compression: gzip
+{% endif %}
     encoding:
       codec: "json"
     healthcheck:

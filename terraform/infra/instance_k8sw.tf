@@ -1,6 +1,6 @@
 module "k8sw" {
   source            = "../modules/openstack_instance"
-  instance_count    = 2
+  instance_count    = var.kubernetes_worker_count
   instance_name     = "${var.project_prefix}-k8sw"
   instance_key_pair = "${var.project_prefix}-key-service-account"
   instance_security_groups = [

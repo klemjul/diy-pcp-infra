@@ -35,13 +35,6 @@
   serial: 10
   roles:
     - kubernetes/kubernetes
-
-- name: Install kubernetes tooling
-  hosts: diypcp-k8sm1
-  become: true
-  roles:
-    - kubernetes/kubernetes_tooling
-
 - name: Get node ip and their PodCidr
   hosts: diypcp-k8sm1
   become: yes
@@ -67,3 +60,16 @@
       ansible.builtin.command: openstack router add route --route destination={{ item }} diypcp-rt1
       with_items: "{{ hostvars['diypcp-k8sm1']['node_routes'] }}"
       changed_when: true
+
+- name: Install kubernetes tooling
+  hosts: diypcp-k8sm1
+  become: true
+  roles:
+    - kubernetes/kubernetes_tooling
+  vars:
+    kubernetes_tooling_openstack_username: "{{ lookup('ansible.builtin.env', 'OS_USERNAME') }}"
+    kubernetes_tooling_openstack_password: "{{ lookup('ansible.builtin.env', 'OS_PASSWORD') }}"
+    kubernetes_tooling_openstack_domain_name: "{{ lookup('ansible.builtin.env', 'OS_USER_DOMAIN_NAME') }}"
+    kubernetes_tooling_openstack_auth_url: "{{ lookup('ansible.builtin.env', 'OS_AUTH_URL') }}"
+    kubernetes_tooling_openstack_tenant_id: "{{ lookup('ansible.builtin.env', 'OS_PROJECT_ID') }}"
+    kubernetes_tooling_openstack_region: "{{ lookup('ansible.builtin.env', 'OS_REGION_NAME') }}"
