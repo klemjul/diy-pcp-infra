@@ -1,3 +1,8 @@
+- name: Prerequisites
+  ansible.builtin.apt:
+    name: python3-kubernetes
+    state: present
+
 - name: Install prometheus-stack
   ansible.builtin.include_tasks: install_promstack.yml
 
