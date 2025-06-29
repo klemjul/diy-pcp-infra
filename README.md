@@ -1,6 +1,7 @@
 # diy-pcp-infra
 
-This repository contains the code I use to follow the excellent Xavki learning series "[Infrastructure cloud de A à Z](https://www.youtube.com/playlist?list=PLn6POgpklwWpehxly1wOT6eB2NvZX9A-X)".
+Training Cloud infrastructure, based entirely on Open Source technologies.  
+Based on awesome [Xavki's 'Infra de A à Z'](https://www.youtube.com/playlist?list=PLn6POgpklwWpehxly1wOT6eB2NvZX9A-X) playlist. ([code](https://gitlab.com/xavki/infrastructure-cloud-infomaniak/-/tree/main)]
 
 ## Dependencies
 
@@ -26,9 +27,15 @@ This section covers dependencies related to developer experience that are not re
 
 ## Infrastructure Overview
 
+Infrastructure can be accessed from the internet from the OpenVPN instance with an OpenVPN-compatible client or from Traefik using an exposed web service.
+
+### VM only version
+
 ![docs/diy-pcp-infra.excalidraw.png](docs/diy-pcp-infra.excalidraw.png)
 
-Infrastructure can be accessed from the internet from the OpenVPN instance with an OpenVPN-compatible client or from Traefik using an exposed web service.
+### VM/K8S version
+
+![docs/diy-pcp-infra-k8s.excalidraw.png](docs/diy-pcp-infra-k8s.excalidraw.png)
 
 ## Provisioning with Terraform
 
@@ -53,7 +60,7 @@ You can use the `terraform` CLI in the `./terraform/infra` folder. Ensure you ha
 
 ### Backup
 
-[./terraform/backup](./terraform/backup) contains an S3 bucket, mainly used for backup with Restic by the [./ansible/roles/backup](./ansible/roles/backup) Ansible role.
+[./terraform/backup](./terraform/backup) contains an S3 buckets, mainly used for backups with Restic by the [./ansible/roles/backup](./ansible/roles/backup) Ansible role.
 
 ## Configuration with Ansible
 
@@ -79,3 +86,5 @@ Extra variables (`-e`) are configured using files in the git-ignored `ansible/en
 | [./ansible/pb_tracing.yml](./ansible/pb_tracing.yml)                 | Configure Tempo backend instance                                                    |
 | [./ansible/pb_keycloak.yml](./ansible/pb_keycloak.yml)               | Configure Keycloak instance                                                         |
 | [./ansible/pb_gitlab.yml](./ansible/pb_gitlab.yml)                   | Configure Gitlab instance                                                           |
+| [./ansible/pb_kubernetes.yml](./ansible/pb_kubernetes.yml)           | Configure Kubernetes cluster instances                                              |
+| [./ansible/pb_kubernetes_apps.yml](./ansible/pb_kubernetes_apps.yml) | Deploy monitoring stacks on Kubernetes cluster                                      |
