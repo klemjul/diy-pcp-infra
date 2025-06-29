@@ -1503,7 +1503,7 @@ data:
         {
           "datasource": {
             "type": "victoriametrics-logs-datasource",
-            "uid": "victoriametrics-logs-datasource"
+            "uid": "vlogs"
           },
           "gridPos": {
             "h": 15,
@@ -1526,7 +1526,7 @@ data:
             {
               "datasource": {
                 "type": "victoriametrics-logs-datasource",
-                "uid": "victoriametrics-logs-datasource""
+                "uid": "vlogs"
               },
               "editorMode": "code",
               "expr": "instance: \"diypcp-traefik1\"  AND type: \"traefik_access_logs\" | unpack_json fields(entryPointName,OriginStatus,DownstreamStatus,ClientHost,RequestMethod,RequestPath,RequestHost)  | entryPointName: \"https\" | \nformat  \"<RequestMethod> (<DownstreamStatus>) <entryPointName>://<RequestHost><RequestPath> from <ClientHost>\"",
