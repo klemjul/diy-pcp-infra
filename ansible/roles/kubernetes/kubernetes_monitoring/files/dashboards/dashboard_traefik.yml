@@ -94,8 +94,11 @@ data:
             "graphMode": "area",
             "justifyMode": "auto",
             "orientation": "auto",
+            "percentChangeColorMode": "standard",
             "reduceOptions": {
-              "calcs": ["lastNotNull"],
+              "calcs": [
+                "lastNotNull"
+              ],
               "fields": "",
               "values": false
             },
@@ -103,7 +106,7 @@ data:
             "textMode": "auto",
             "wideLayout": true
           },
-          "pluginVersion": "10.4.1",
+          "pluginVersion": "11.1.5",
           "targets": [
             {
               "datasource": {
@@ -190,7 +193,10 @@ data:
           "id": 7,
           "options": {
             "legend": {
-              "calcs": ["mean", "max"],
+              "calcs": [
+                "mean",
+                "max"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true,
@@ -287,7 +293,10 @@ data:
           "id": 6,
           "options": {
             "legend": {
-              "calcs": ["mean", "max"],
+              "calcs": [
+                "mean",
+                "max"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true,
@@ -350,11 +359,15 @@ data:
               "displayMode": "list",
               "placement": "right",
               "showLegend": true,
-              "values": ["percent"]
+              "values": [
+                "percent"
+              ]
             },
             "pieType": "pie",
             "reduceOptions": {
-              "calcs": ["mean"],
+              "calcs": [
+                "mean"
+              ],
               "fields": "",
               "values": false
             },
@@ -449,7 +462,10 @@ data:
           "id": 23,
           "options": {
             "legend": {
-              "calcs": ["mean", "max"],
+              "calcs": [
+                "mean",
+                "max"
+              ],
               "displayMode": "table",
               "placement": "right",
               "showLegend": true,
@@ -547,7 +563,10 @@ data:
           "id": 5,
           "options": {
             "legend": {
-              "calcs": ["mean", "max"],
+              "calcs": [
+                "mean",
+                "max"
+              ],
               "displayMode": "table",
               "placement": "right",
               "showLegend": true,
@@ -652,7 +671,10 @@ data:
               "id": 17,
               "options": {
                 "legend": {
-                  "calcs": ["mean", "max"],
+                  "calcs": [
+                    "mean",
+                    "max"
+                  ],
                   "displayMode": "table",
                   "placement": "bottom",
                   "showLegend": true,
@@ -748,7 +770,10 @@ data:
               "id": 18,
               "options": {
                 "legend": {
-                  "calcs": ["mean", "max"],
+                  "calcs": [
+                    "mean",
+                    "max"
+                  ],
                   "displayMode": "table",
                   "placement": "bottom",
                   "showLegend": true,
@@ -844,7 +869,10 @@ data:
               "id": 19,
               "options": {
                 "legend": {
-                  "calcs": ["mean", "max"],
+                  "calcs": [
+                    "mean",
+                    "max"
+                  ],
                   "displayMode": "table",
                   "placement": "bottom",
                   "showLegend": true,
@@ -940,7 +968,10 @@ data:
               "id": 20,
               "options": {
                 "legend": {
-                  "calcs": ["mean", "max"],
+                  "calcs": [
+                    "mean",
+                    "max"
+                  ],
                   "displayMode": "table",
                   "placement": "right",
                   "showLegend": true,
@@ -1036,7 +1067,10 @@ data:
               "id": 24,
               "options": {
                 "legend": {
-                  "calcs": ["mean", "max"],
+                  "calcs": [
+                    "mean",
+                    "max"
+                  ],
                   "displayMode": "table",
                   "placement": "right",
                   "showLegend": true,
@@ -1131,7 +1165,10 @@ data:
               "id": 2,
               "options": {
                 "legend": {
-                  "calcs": ["mean", "max"],
+                  "calcs": [
+                    "mean",
+                    "max"
+                  ],
                   "displayMode": "table",
                   "placement": "right",
                   "showLegend": true,
@@ -1226,7 +1263,10 @@ data:
               "id": 21,
               "options": {
                 "legend": {
-                  "calcs": ["mean", "max"],
+                  "calcs": [
+                    "mean",
+                    "max"
+                  ],
                   "displayMode": "table",
                   "placement": "right",
                   "showLegend": true,
@@ -1331,7 +1371,10 @@ data:
               "id": 3,
               "options": {
                 "legend": {
-                  "calcs": ["mean", "max"],
+                  "calcs": [
+                    "mean",
+                    "max"
+                  ],
                   "displayMode": "table",
                   "placement": "right",
                   "showLegend": true,
@@ -1422,7 +1465,10 @@ data:
               "id": 4,
               "options": {
                 "legend": {
-                  "calcs": ["mean", "max"],
+                  "calcs": [
+                    "mean",
+                    "max"
+                  ],
                   "displayMode": "table",
                   "placement": "right",
                   "showLegend": true,
@@ -1456,8 +1502,8 @@ data:
         },
         {
           "datasource": {
-            "type": "loki",
-            "uid": "loki"
+            "type": "victoriametrics-logs-datasource",
+            "uid": "victoriametrics-logs-datasource"
           },
           "gridPos": {
             "h": 15,
@@ -1469,22 +1515,22 @@ data:
           "options": {
             "dedupStrategy": "none",
             "enableLogDetails": true,
-            "prettifyLogMessage": true,
+            "prettifyLogMessage": false,
             "showCommonLabels": false,
             "showLabels": false,
             "showTime": false,
             "sortOrder": "Descending",
-            "wrapLogMessage": true
+            "wrapLogMessage": false
           },
           "targets": [
             {
               "datasource": {
-                "type": "loki",
-                "uid": "loki"
+                "type": "victoriametrics-logs-datasource",
+                "uid": "victoriametrics-logs-datasource""
               },
-              "editorMode": "builder",
-              "expr": "{instance=\"traefik1\", type=\"traefik_access\"} |= `` | json | entryPointName = `https` | line_format `{{ .time }} / {{ .DownstreamStatus }} / {{ .RequestHost }} / {{ .ClientAddr }} / {{ .TLSVersion }} / {{ .RequestMethod }} / {{ .RequestProtocol }} / {{ .RequestPath }}`",
-              "queryType": "range",
+              "editorMode": "code",
+              "expr": "instance: \"diypcp-traefik1\"  AND type: \"traefik_access_logs\" | unpack_json fields(entryPointName,OriginStatus,DownstreamStatus,ClientHost,RequestMethod,RequestPath,RequestHost)  | entryPointName: \"https\" | \nformat  \"<RequestMethod> (<DownstreamStatus>) <entryPointName>://<RequestHost><RequestPath> from <ClientHost>\"",
+              "queryType": "instant",
               "refId": "A"
             }
           ],
@@ -1501,8 +1547,8 @@ data:
           {
             "current": {
               "selected": false,
-              "text": "VictoriaMetrics",
-              "value": "ddhxkkr91u680a"
+              "text": "vmetrics",
+              "value": "P70C6FC06E82630FD"
             },
             "hide": 0,
             "includeAll": false,
@@ -1578,6 +1624,6 @@ data:
       "timezone": "",
       "title": "Traefik",
       "uid": "traefik",
-      "version": 2,
+      "version": 1,
       "weekStart": ""
     }

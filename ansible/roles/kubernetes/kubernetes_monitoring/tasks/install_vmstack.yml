@@ -21,3 +21,8 @@
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'vmcluster.yml.j2') | from_yaml }}"
+
+- name: Deploy VLogs
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'vlogs-values.yml.j2') | from_yaml }}"

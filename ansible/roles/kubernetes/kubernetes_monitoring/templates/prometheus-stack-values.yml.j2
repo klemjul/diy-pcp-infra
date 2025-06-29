@@ -1,5 +1,9 @@
 grafana:
   enabled: true
+  env:
+    GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: "victoriametrics-logs-datasource"
+  plugins:
+    - https://github.com/VictoriaMetrics/victorialogs-datasource/releases/download/v0.18.1/victoriametrics-logs-datasource-v0.18.1.zip;victoriametrics-logs-datasource
   dashboardProviders:
     dashboardproviders.yaml:
       apiVersion: 1
@@ -23,6 +27,11 @@ grafana:
     type: prometheus
     access: proxy
     isDefault: true
+  - name: vlogs
+    url: {{ kubernetes_monitoring_grafana_ds_vlogs_url}}
+    type: victoriametrics-logs-datasource
+    access: proxy
+    isDefault: false
   deleteDatasources: 
   - name: Prometheus
     orgId: 1

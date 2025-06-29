@@ -21,3 +21,8 @@ kubernetes_monitoring_vmcluster_vmselect_storageclass: "csi-cinder-sc-delete"
 
 kubernetes_monitoring_consul_exporter_version: "1.0.0"
 kubernetes_monitoring_consul_exporter_server: "consul.service.consul:8500"
+
+kubernetes_monitoring_vmcluster_vlogs_retention: "1y"
+kubernetes_monitoring_vmcluster_vlogs_size: "30Gi"
+kubernetes_monitoring_vmcluster_vlogs_storageclass: "csi-cinder-sc-delete"
+kubernetes_monitoring_grafana_ds_vlogs_url: http://vlogs-vlogs.service.consul:9428

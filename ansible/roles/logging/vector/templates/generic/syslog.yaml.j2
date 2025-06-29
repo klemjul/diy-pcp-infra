@@ -13,6 +13,10 @@ sinks:
     inputs:
       - syslog
     endpoint: http://{{ vector_loki_endpoint }}
+{% if vector_loki_path != "" %}
+    path: "{{ vector_loki_path }}"
+    compression: gzip
+{% endif %}
     encoding:
       codec: "json"
     healthcheck:
