@@ -1,5 +1,10 @@
 # diy-pcp-infra
 
+> **⚠️ ARCHIVED**
+>
+> repository not maintained, training finished
+
+
 Training Cloud infrastructure, based entirely on Open Source technologies.  
 Based on awesome [Xavki's 'Infra de A à Z'](https://www.youtube.com/playlist?list=PLn6POgpklwWpehxly1wOT6eB2NvZX9A-X) playlist. ([code](https://gitlab.com/xavki/infrastructure-cloud-infomaniak/-/tree/main)]
 
